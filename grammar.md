@@ -2,16 +2,16 @@ Identifier:
     IDENTIFIER
 
 QualifiedIdentifier:
-    Identifier  ( '.'  Identifier )(*)
+    sepBy1(Identifier, '.')
 
 QualifiedIdentifierList: 
-    QualifiedIdentifier  ( ','  QualifiedIdentifier )(*)
+    sepBy1(QualifiedIdentifier, ',')
 
 CompilationUnit: 
     ( Annotations(?)  'package'  QualifiedIdentifier  ';' )(?)  ImportDeclaration(*)  TypeDeclaration(*)
 
 ImportDeclaration: 
-    'import'  'static'(?)  Identifier  ( '.'  Identifier )(*)  ( '.'  '*' )(?)  ';'
+    'import'  'static'(?)  sepBy1(Identifier, '.')  ( '.'  '*' )(?)  ';'
 
 TypeDeclaration: 
     ClassOrInterfaceDeclaration  |  ';'
@@ -59,7 +59,7 @@ ReferenceType:
     Identifier  TypeArguments(?)  ( '.'  Identifier  TypeArguments(?) )(*)
 
 TypeArguments: 
-    '<'  TypeArgument  ( ','  TypeArgument )(*)  '>'
+    '<'  sepBy1(TypeArgument, ',')  '>'
 
 TypeArgument:  
     ReferenceType  |
@@ -69,7 +69,7 @@ NonWildcardTypeArguments:
     '<'  TypeList  '>'
 
 TypeList:  
-    ReferenceType  ( ','  ReferenceType )(*)
+    sepBy1(ReferenceType, ',')
 
 
 TypeArgumentsOrDiamond:
@@ -83,13 +83,13 @@ NonWildcardTypeArgumentsOrDiamond:
 
 
 TypeParameters:
-    '<'  TypeParameter  ( ','  TypeParameter )(*)  '>'
+    '<'  sepBy1(TypeParameter, ',')  '>'
 
 TypeParameter:
     Identifier  ( 'extends'  Bound )(?)
 
 Bound:  
-    ReferenceType  ( '&'  ReferenceType )(*)
+    sepBy1(ReferenceType, '&')
 
 Modifier: 
     Annotation      |
@@ -116,7 +116,7 @@ AnnotationElement:
     ElementValue
 
 ElementValuePairs:
-    ElementValuePair  ( ','  ElementValuePair )(*)
+    sepBy1(ElementValuePair, ',')
 
 ElementValuePair:
     Identifier  '='  ElementValue
@@ -130,7 +130,7 @@ ElementValueArrayInitializer:
     '{'  ElementValues(?)  ','(?)  '}'
 
 ElementValues:
-    ElementValue  ( ','  ElementValue )(*)
+    sepBy1(ElementValue, ',')
 
 ClassBody: 
     '{'  ClassBodyDeclaration(*)  '}'
@@ -235,7 +235,7 @@ VariableDeclaratorId:
 
 
 VariableDeclarators:
-    VariableDeclarator  ( ','  VariableDeclarator )(*)
+    sepBy1(VariableDeclarator, ',')
 
 VariableDeclarator:
     Identifier  VariableDeclaratorRest
@@ -248,7 +248,7 @@ VariableInitializer:
     Expression
 
 ArrayInitializer:
-    '{'  ( VariableInitializer  ( ','  VariableInitializer )(*)  ','(?) )(?)  '}'
+    '{'  ( sepBy1(VariableInitializer, ',')  ','(?) )(?)  '}'
 
 Block: 
     '{'  BlockStatements  '}'
@@ -287,13 +287,13 @@ StatementExpression:
     Expression
 
 Catches:
-    CatchClause  CatchClause(*)
+    CatchClause(+)
 
 CatchClause:
     'catch'  '('  VariableModifier(*)  CatchType  Identifier  ')'  Block
 
 CatchType:
-    QualifiedIdentifier  ( '|'  QualifiedIdentifier )(*)
+    sepBy1(QualfiedIdentifier, '|')
 
 Finally:
     'finally'  Block
@@ -302,7 +302,7 @@ ResourceSpecification:
     '('  Resources  ';'(?)  ')'
 
 Resources:
-    Resource  ( ';'  Resource )(*)
+    sepBy1(Resource, ';')
 
 Resource:
     VariableModifier(*)  ReferenceType  VariableDeclaratorId  '='  Expression 
@@ -314,7 +314,7 @@ SwitchBlockStatementGroup:
     SwitchLabels  BlockStatements
 
 SwitchLabels:
-    SwitchLabel  SwitchLabel(*)
+    SwitchLabel(+)
 
 SwitchLabel: 
     ( 'case'  Expression  ':'       )  |
@@ -342,7 +342,7 @@ ForVariableDeclaratorsRest:
 
 ForInit: 
 ForUpdate:
-    StatementExpression  ( ','  StatementExpression )(*)
+    sepBy1(StatementExpression, ',')
 
 Expression: 
     Expression1  ( AssignmentOperator  Expression1 )(?)
@@ -419,7 +419,7 @@ Primary:
     ( 'super'  SuperSuffix )  |
     ( 'new'  Creator )        |
     ( NonWildcardTypeArguments  ( ExplicitGenericInvocationSuffix  |  ( 'this' Arguments ) ) )  |
-    ( Identifier  ( '.'  Identifier )(*)  IdentifierSuffix(?) )                                 |
+    ( sepBy1(Identifier, '.')  IdentifierSuffix(?) )                                            |
     ( BasicType  ( '['  ']' )(*)  '.'  'class' )                                                |
     ( 'void'  '.'  'class' )
 
@@ -438,6 +438,7 @@ ParExpression:
 
 Arguments:
     '('  ( Expression  ( ','  Expression )(*) )(?)  ')'
+    '('  sepBy0(Expression, ',')  ')'
 
 SuperSuffix: 
     Arguments   | 
@@ -499,8 +500,7 @@ EnumBody:
     '{'  EnumConstants(?)  ','(?)  EnumBodyDeclarations(?)  '}'
 
 EnumConstants:
-    EnumConstant  |
-    ( EnumConstants  ','  EnumConstant )
+    sepBy1(EnumConstant, ',')
 
 EnumConstant:
     Annotations(?)  Identifier  Arguments(?)  ClassBody(?)
