@@ -260,17 +260,11 @@
         '%='   |  '<<='  |  '>>='  |  '>>>='
     
     Expression1: 
-        Expression2  Expression1Rest(?)
-    
-    Expression1Rest: 
-        '?'  Expression  ':'  Expression1
+        Expression2  ( '?'  Expression  ':'  Expression1 )(?)
     
     Expression2:
-        Expression3  Expression2Rest(?)
-    
-    Expression2Rest:
-        ( InfixOp Expression3 )(*)   |
-        ( 'instanceof'  Type )
+        Expression3  ( ( InfixOp Expression3 )(*)  |  
+                       ( 'instanceof'  Type )      )(?)
     
     InfixOp: 
         '||'  |  '&&'  |  '|'   |  '^'   |
@@ -346,7 +340,6 @@
                  ']'  
                  ( '['  Expression  ']' )(*)  
                  Braces(*) ) )
-    
     
     
     IdentifierSuffix:
