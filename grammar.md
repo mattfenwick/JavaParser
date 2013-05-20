@@ -19,7 +19,7 @@
     
     TypeDeclaration: 
         Modifier(*)  ( ClassDeclaration    |  EnumDeclaration    |  
-                       Interface           |  AnnotationTypeDeclaration )
+                       Interface           |  AnnotationType )
     
     
     ClassDeclaration: 
@@ -32,12 +32,11 @@
     Interface: 
         'interface'  Identifier  TypeParameters(?)  ( 'extends'  TypeList )(?)  InterfaceBody
     
-    AnnotationTypeDeclaration:
+    AnnotationType:
         '@'  'interface'  Identifier  AnnotationTypeBody
     
     Type:
-        ( BasicType  Braces(*) )       |
-        ( ReferenceType  Braces(*) )
+        ( BasicType  |  ReferenceType )  Braces(*)
     
     BasicType: 
         'byte'   |   'short'   |   'char'     |   'int'      |
@@ -95,13 +94,13 @@
         ( 'static'(?)  Block )
     
     ClassMember:
-        Method                               |
-        Field                                |
-        Constructor                          |
-        ClassDeclaration                     |
-        EnumDeclaration                      |
-        Interface                            |
-        AnnotationTypeDeclaration
+        Method              |
+        Field               |
+        Constructor         |
+        ClassDeclaration    |
+        EnumDeclaration     |
+        Interface           |
+        AnnotationType
     
     Method:
         TypeParameters(?)  ( Type  |  'void' )  Identifier  FormalParameters  Braces(*)  
@@ -118,12 +117,12 @@
         '{'  ( ';'  |  ( Modifier(*)  InterfaceMember ) )(*)  '}'
     
     InterfaceMember:
-        InterfaceField                    |
-        InterfaceMethod                   |
-        ClassDeclaration                  |
-        EnumDeclaration                   |
-        Interface                         |
-        AnnotationTypeDeclaration
+        InterfaceField      |
+        InterfaceMethod     |
+        ClassDeclaration    |
+        EnumDeclaration     |
+        Interface           |
+        AnnotationType
     
     InterfaceField:
         Type  Identifier  ConstantDeclaratorsRest  ';'
@@ -392,7 +391,7 @@
         ClassDeclaration                                           |
         EnumDeclaration                                            |
         Interface                                                  |
-        AnnotationTypeDeclaration
+        AnnotationType
     
     AnnotationMethodOrConstantRest:
         AnnotationMethodRest        |
