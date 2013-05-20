@@ -8,7 +8,7 @@ QualifiedIdentifierList:
     sepBy1(QualifiedIdentifier, ',')
 
 CompilationUnit: 
-    ( Annotations(?)  'package'  QualifiedIdentifier  ';' )(?)  ImportDeclaration(*)  TypeDeclaration(*)
+    ( Annotation(*)  'package'  QualifiedIdentifier  ';' )(?)  ImportDeclaration(*)  TypeDeclaration(*)
 
 ImportDeclaration: 
     'import'  'static'(?)  sepBy1(Identifier, '.')  ( '.'  '*' )(?)  ';'
@@ -18,7 +18,6 @@ TypeDeclaration:
 
 ClassOrInterfaceDeclaration: 
     Modifier(*)  ( ClassDeclaration  |  EnumDeclaration  |  InterfaceDeclaration  |  AnnotationTypeDeclaration )
-
 
 
 ClassDeclaration: 
@@ -48,10 +47,9 @@ BasicType:
     'boolean'
 
 ReferenceType:
-    Identifier  TypeArguments(?)  ( '.'  Identifier  TypeArguments(?) )(*)
-
-TypeArguments: 
-    '<'  sepBy1(TypeArgument, ',')  '>'
+    sepBy1(Identifier  typeargs(?), '.')
+  where
+    typeargs = '<'  sepBy1(TypeArgument, ',')  '>'
 
 TypeArgument:  
     ReferenceType  |
@@ -64,24 +62,11 @@ TypeList:
     sepBy1(ReferenceType, ',')
 
 
-TypeArgumentsOrDiamond:
-    ( '<'  '>' )  | 
-    TypeArguments
-
-NonWildcardTypeArgumentsOrDiamond:
-    ( '<'  '>' )  |
-    NonWildcardTypeArguments
-
-
-
 TypeParameters:
     '<'  sepBy1(TypeParameter, ',')  '>'
 
 TypeParameter:
-    Identifier  ( 'extends'  Bound )(?)
-
-Bound:  
-    sepBy1(ReferenceType, '&')
+    Identifier  ( 'extends'  sepBy1(ReferenceType, '&') )(?)
 
 Modifier: 
     Annotation      |
@@ -97,32 +82,20 @@ Modifier:
     'volatile'      |
     'strictfp'      
 
-Annotations:
-    Annotation  Annotation(*)
-
 Annotation:
     '@'  QualifiedIdentifier  ( '('  AnnotationElement(?)  ')' )(?)
 
 AnnotationElement:
-    ElementValuePairs  |
+    sepBy1(Identifier  '='  ElementValue, ',')  |
     ElementValue
 
-ElementValuePairs:
-    sepBy1(ElementValuePair, ',')
-
-ElementValuePair:
-    Identifier  '='  ElementValue
-    
 ElementValue:
     Annotation    |
     Expression1   |
     ElementValueArrayInitializer
 
 ElementValueArrayInitializer:
-    '{'  ElementValues(?)  ','(?)  '}'
-
-ElementValues:
-    sepBy1(ElementValue, ',')
+    '{'  sepBy0(ElementValue, ',')  ','(?)  '}'
 
 ClassBody: 
     '{'  ClassBodyDeclaration(*)  '}'
@@ -192,13 +165,10 @@ InterfaceMethodOrFieldRest:
     InterfaceMethodDeclaratorRest
 
 ConstantDeclaratorsRest: 
-    ConstantDeclaratorRest  ( ','  ConstantDeclarator )(*)
+    ConstantDeclaratorRest  ( ','  Identifier  ConstantDeclaratorRest )(*)
 
 ConstantDeclaratorRest: 
     ( '['  ']' )(*)  '='  VariableInitializer
-
-ConstantDeclarator: 
-    Identifier  ConstantDeclaratorRest
 
 InterfaceMethodDeclaratorRest:
     FormalParameters  ( '['  ']' )(*)  ( 'throws'  QualifiedIdentifierList )(?)  ';' 
@@ -224,10 +194,8 @@ FormalParameterDeclsRest:
     ( '...'  VariableDeclaratorId )
 
 
-
 VariableDeclaratorId:
     Identifier  ( '['  ']' )(*)
-
 
 
 VariableDeclarators:
@@ -247,10 +215,7 @@ ArrayInitializer:
     '{'  ( sepBy1(VariableInitializer, ',')  ','(?) )(?)  '}'
 
 Block: 
-    '{'  BlockStatements  '}'
-
-BlockStatements: 
-    BlockStatement(*)
+    '{'  BlockStatement(*)  '}'
 
 BlockStatement:
     LocalVariableDeclarationStatement      |
@@ -265,52 +230,37 @@ Statement:
     ';'    |
     ( Identifier  ':'  Statement )  |
     ( StatementExpression  ';' )    |
-    ( 'if'  ParExpression  Statement  ( 'else'  Statement )(?) )       | 
-    ( 'assert'  Expression  ( ':'  Expression )(?)  ';' )              |
-    ( 'switch'  ParExpression  '{'  SwitchBlockStatementGroups  '}' )  | 
-    ( 'while'  ParExpression  Statement )             |
-    ( 'do'  Statement  'while'  ParExpression  ';' )  |
-    ( 'for'  '('  ForControl  ')'  Statement )        |
+    ( 'if'  ParExpression  Statement  ( 'else'  Statement )(?) )    | 
+    ( 'assert'  Expression  ( ':'  Expression )(?)  ';' )           |
+    ( 'switch'  ParExpression  '{'  SwitchBlock  '}' )    | 
+    ( 'while'  ParExpression  Statement )                 |
+    ( 'do'  Statement  'while'  ParExpression  ';' )      |
+    ( 'for'  '('  ForControl  ')'  Statement )            |
     ( 'break'  Identifier(?)  ';' )           |
     ( 'continue'  Identifier(?)  ';' )        |
     ( 'return'  Expression(?)  ';' )          |
     ( 'throw'  Expression  ';' )              |
     ( 'synchronized'  ParExpression  Block )  |
-    ( 'try'  Block  ( Catches  |  ( Catches(?)  Finally ) ) )  |
-    ( 'try'  ResourceSpecification  Block  Catches(?)  Finally(?) )
+    ( 'try'  Block  ( Catch(+)  |  ( Catch(*)  Finally ) ) )  |
+    ( 'try'  ResourceSpecification  Block  Catch(*)  Finally(?) )
 
 StatementExpression: 
     Expression
 
-Catches:
-    CatchClause(+)
-
-CatchClause:
-    'catch'  '('  VariableModifier(*)  CatchType  Identifier  ')'  Block
-
-CatchType:
-    sepBy1(QualfiedIdentifier, '|')
+Catch:
+    'catch'  '('  VariableModifier(*)  sepBy1(QualfiedIdentifier, '|')  Identifier  ')'  Block
 
 Finally:
     'finally'  Block
 
 ResourceSpecification:
-    '('  Resources  ';'(?)  ')'
-
-Resources:
-    sepBy1(Resource, ';')
+    '('  sepBy1(Resource, ';')  ';'(?)  ')'
 
 Resource:
     VariableModifier(*)  ReferenceType  VariableDeclaratorId  '='  Expression 
 
-SwitchBlockStatementGroups: 
-    SwitchBlockStatementGroup(*)
-
-SwitchBlockStatementGroup: 
-    SwitchLabels  BlockStatements
-
-SwitchLabels:
-    SwitchLabel(+)
+SwitchBlock: 
+    ( SwitchLabel(+)  BlockStatement(*) )(*)
 
 SwitchLabel: 
     ( 'case'  Expression  ':'       )  |
@@ -337,6 +287,8 @@ ForVariableDeclaratorsRest:
     ( '='  VariableInitializer )(?)  ( ','  VariableDeclarator )(*)
 
 ForInit: 
+    sepBy1(StatementExpression, ',')
+
 ForUpdate:
     sepBy1(StatementExpression, ',')
 
@@ -448,8 +400,10 @@ Creator:
     ( NonWildcardTypeArguments  CreatedName  ClassCreatorRest )  |
     ( CreatedName  ( ClassCreatorRest  |  ArrayCreatorRest ) )
 
-CreatedName:   
-    Identifier  TypeArgumentsOrDiamond(?)  ( '.'  Identifier  TypeArgumentsOrDiamond(?) )(*)
+CreatedName:
+    sepBy1(x, '.')
+  where
+    x = Identifier  ( ( '<'  '>' )  |  TypeArguments )(?)
 
 ClassCreatorRest: 
     Arguments  ClassBody(?)
@@ -480,8 +434,7 @@ ExplicitGenericInvocation:
     NonWildcardTypeArguments  ExplicitGenericInvocationSuffix
 
 InnerCreator:  
-    Identifier  NonWildcardTypeArgumentsOrDiamond(?)  ClassCreatorRest
-
+    Identifier  ( ( '<'  '>' )  |  NonWildcardTypeArguments )(?)  ClassCreatorRest
 
 
 Selector:
@@ -499,22 +452,14 @@ EnumConstants:
     sepBy1(EnumConstant, ',')
 
 EnumConstant:
-    Annotations(?)  Identifier  Arguments(?)  ClassBody(?)
+    Annotation(*)  Identifier  Arguments(?)  ClassBody(?)
 
 EnumBodyDeclarations:
-    ','  ClassBodyDeclaration(*)
-
+    ';'  ClassBodyDeclaration(*)
 
 
 AnnotationTypeBody:
-    '{'  AnnotationTypeElementDeclarations(?)  '}'
-
-AnnotationTypeElementDeclarations:
-    AnnotationTypeElementDeclaration  |
-    ( AnnotationTypeElementDeclarations  AnnotationTypeElementDeclaration )
-
-AnnotationTypeElementDeclaration:
-    Modifier(*)  AnnotationTypeElementRest
+    '{'  ( Modifier(*)  AnnotationTypeElementRest )(*)  '}'
 
 AnnotationTypeElementRest:
     ( Type  Identifier  AnnotationMethodOrConstantRest  ';' )  |
