@@ -208,7 +208,7 @@
         ( 'try'  ResourceSpecification  Block  Catch(*)  Finally(?) )
     
     Catch:
-        'catch'  '('  VariableModifier(*)  sepBy1(QualfiedIdentifier, '|')  Identifier  ')'  Block
+        'catch'  '('  VariableModifier(*)  sepBy1(QualifiedIdentifier, '|')  Identifier  ')'  Block
     
     Finally:
         'finally'  Block
