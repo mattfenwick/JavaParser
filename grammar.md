@@ -18,8 +18,8 @@
         'import'  'static'(?)  sepBy1(Identifier, '.')  ( '.'  '*' )(?)  ';'
     
     TypeDeclaration: 
-        Modifier(*)  ( ClassDeclaration      |  EnumDeclaration    |  
-                       InterfaceDeclaration  |  AnnotationTypeDeclaration )
+        Modifier(*)  ( ClassDeclaration    |  EnumDeclaration    |  
+                       Interface           |  AnnotationTypeDeclaration )
     
     
     ClassDeclaration: 
@@ -29,7 +29,7 @@
     EnumDeclaration:
         'enum'  Identifier  ( 'implements'  TypeList )(?)  EnumBody
     
-    InterfaceDeclaration: 
+    Interface: 
         'interface'  Identifier  TypeParameters(?)  ( 'extends'  TypeList )(?)  InterfaceBody
     
     AnnotationTypeDeclaration:
@@ -40,14 +40,8 @@
         ( ReferenceType  Braces(*) )
     
     BasicType: 
-        'byte'     |
-        'short'    |
-        'char'     |
-        'int'      |
-        'long'     |
-        'float'    |
-        'double'   |
-        'boolean'
+        'byte'   |   'short'   |   'char'     |   'int'      |
+        'long'   |   'float'   |   'double'   |   'boolean'
     
     ReferenceType:
         sepBy1(Identifier  typeargs(?), '.')
@@ -72,18 +66,10 @@
         Identifier  ( 'extends'  sepBy1(ReferenceType, '&') )(?)
     
     Modifier: 
-        Annotation      |
-        'public'        |
-        'protected'     |
-        'private'       |
-        'static'        |
-        'abstract'      |
-        'final'         |
-        'native'        |
-        'synchronized'  |
-        'transient'     |
-        'volatile'      |
-        'strictfp'      
+        Annotation     |    'public'      |    'protected'     |
+        'private'      |    'static'      |    'abstract'      |
+        'final'        |    'native'      |    'synchronized'  |
+        'transient'    |    'volatile'    |    'strictfp'      
     
     Annotation:
         '@'  QualifiedIdentifier  ( '('  AnnotationElement(?)  ')' )(?)
@@ -115,7 +101,7 @@
         GenericMethodOrConstructorDecl                    |
         ClassDeclaration                                  |
         EnumDeclaration                                   |
-        InterfaceDeclaration                              |
+        Interface                                         |
         AnnotationTypeDeclaration
     
     MethodOrFieldDecl:
@@ -145,27 +131,20 @@
         ( Identifier  ConstructorDeclaratorRest )
     
     InterfaceBody: 
-        '{'  InterfaceBodyDeclaration(*)  '}'
+        '{'  ( ';'  |  ( Modifier(*)  InterfaceMember ) )(*)  '}'
     
-    InterfaceBodyDeclaration:
-        ';'  |  
-        ( Modifier(*)  InterfaceMemberDecl )
-    
-    InterfaceMemberDecl:
-        InterfaceMethodOrFieldDecl                                 |
-        ( 'void'  Identifier  VoidInterfaceMethodDeclaratorRest )  |
-        InterfaceGenericMethodDecl                                 |
-        ClassDeclaration                                           |
-        EnumDeclaration                                            |
-        InterfaceDeclaration                                       |
+    InterfaceMember:
+        InterfaceField                    |
+        InterfaceMethod                   |
+        VoidInterfaceMethod               |
+        GenericInterfaceMethod            |
+        ClassDeclaration                  |
+        EnumDeclaration                   |
+        Interface                         |
         AnnotationTypeDeclaration
     
-    InterfaceMethodOrFieldDecl:
-        Type  Identifier  InterfaceMethodOrFieldRest
-    
-    InterfaceMethodOrFieldRest:
-        ( ConstantDeclaratorsRest  ';' )  |
-        InterfaceMethodDeclaratorRest
+    InterfaceField:
+        Type  Identifier  ConstantDeclaratorsRest  ';'
     
     ConstantDeclaratorsRest: 
         ConstantDeclaratorRest  ( ','  Identifier  ConstantDeclaratorRest )(*)
@@ -173,14 +152,15 @@
     ConstantDeclaratorRest: 
         Braces(*)  '='  VariableInitializer
     
-    InterfaceMethodDeclaratorRest:
-        FormalParameters  Braces(*)  ( 'throws'  QualifiedIdentifierList )(?)  ';' 
+    InterfaceMethod
+        Type  Identifier  FormalParameters  Braces(*)  ( 'throws'  QualifiedIdentifierList )(?)  ';' 
     
-    VoidInterfaceMethodDeclaratorRest:
-        FormalParameters  ( 'throws'  QualifiedIdentifierList )(?)  ';'
+    VoidInterfaceMethod:
+        'void'  Identifier  FormalParameters  ( 'throws'  QualifiedIdentifierList )(?)  ';'
     
-    InterfaceGenericMethodDecl:
-        TypeParameters  ( Type  |  'void' )  Identifier  InterfaceMethodDeclaratorRest
+    GenericInterfaceMethod:
+        TypeParameters  ( Type  |  'void' )  Identifier  FormalParameters  Braces(*)  
+        ( 'throws'  QualifiedIdentifierList )(?)  ';'
     
     FormalParameters: 
         '('  FormalParameterDecls(?)  ')'
@@ -234,15 +214,15 @@
         ( Identifier  ':'  Statement )                                  |
         ( Expression  ';' )                                             |
         ( 'if'  ParExpression  Statement  ( 'else'  Statement )(?) )    | 
-        ( 'assert'  Expression  ( ':'  Expression )(?)  ';' )           |
-        ( 'switch'  ParExpression  '{'  SwitchBlock  '}' )              | 
-        ( 'while'  ParExpression  Statement )                           |
-        ( 'do'  Statement  'while'  ParExpression  ';' )                |
-        ( 'for'  '('  ForControl  ')'  Statement )                      |
-        ( 'break'  Identifier(?)  ';' )                                 |
+        ( 'assert'    Expression   ( ':'  Expression )(?)  ';'   )      |
+        ( 'switch'    ParExpression  '{'      SwitchBlock  '}'   )      | 
+        ( 'while'     ParExpression           Statement          )      |
+        ( 'do'        Statement      'while'  ParExpression  ';' )      |
+        ( 'for'  '('  ForControl     ')'      Statement          )      |
+        ( 'break'     Identifier(?)  ';' )                              |
         ( 'continue'  Identifier(?)  ';' )                              |
-        ( 'return'  Expression(?)  ';' )                                |
-        ( 'throw'  Expression  ';' )                                    |
+        ( 'return'    Expression(?)  ';' )                              |
+        ( 'throw'     Expression     ';' )                              |
         ( 'synchronized'  ParExpression  Block )                        |
         ( 'try'  Block  ( Catch(+)  |  ( Catch(*)  Finally ) ) )        |
         ( 'try'  ResourceSpecification  Block  Catch(*)  Finally(?) )
@@ -295,18 +275,9 @@
         Expression1  ( AssignmentOperator  Expression1 )(?)
     
     AssignmentOperator: 
-        '='    |
-        '+='   | 
-        '-='   |
-        '*='   |
-        '/='   |
-        '&='   |
-        '|='   |
-        '^='   |
-        '%='   |
-        '<<='  |
-        '>>='  |
-        '>>>='
+        '='    |  '+='   |  '-='   |  '*='   |
+        '/='   |  '&='   |  '|='   |  '^='   |
+        '%='   |  '<<='  |  '>>='  |  '>>>='
     
     Expression1: 
         Expression2  Expression1Rest(?)
@@ -322,25 +293,11 @@
         ( 'instanceof'  Type )
     
     InfixOp: 
-        '||'  | 
-        '&&'  |
-        '|'   |
-        '^'   |
-        '&'   |
-        '=='  |
-        '!='  |
-        '<'   |
-        '>'   |
-        '<='  |
-        '>='  |
-        '<<'  |
-        '>>'  |
-        '>>>' |
-        '+'   |
-        '-'   |
-        '*'   |
-        '/'   |
-        '%'
+        '||'  |  '&&'  |  '|'   |  '^'   |
+        '&'   |  '=='  |  '!='  |  '<'   |
+        '>'   |  '<='  |  '>='  |  '<<'  |
+        '>>'  |  '>>>' |  '+'   |  '-'   |
+        '*'   |  '/'   |  '%'
     
     Expression3: 
         ( PrefixOp  Expression3 )                           |
@@ -348,16 +305,11 @@
         ( Primary  Selector(*)  PostfixOp(*) )
     
     PrefixOp: 
-        '++' |
-        '--' |
-        '!'  |
-        '~'  |
-        '+'  |
-        '-'
+        '++'  |  '--'  |  '!'   |  '~'   |
+        '+'   |  '-'
     
     PostfixOp: 
-        '++'  |
-        '--'
+        '++'  |  '--'
     
     Primary: 
         Literal                                                               |
@@ -463,7 +415,7 @@
         ( Type  Identifier  AnnotationMethodOrConstantRest  ';' )  |
         ClassDeclaration                                           |
         EnumDeclaration                                            |
-        InterfaceDeclaration                                       |
+        Interface                                                  |
         AnnotationTypeDeclaration
     
     AnnotationMethodOrConstantRest:
