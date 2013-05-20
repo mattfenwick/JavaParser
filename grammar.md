@@ -17,25 +17,17 @@ TypeDeclaration:
     ClassOrInterfaceDeclaration  |  ';'
 
 ClassOrInterfaceDeclaration: 
-    Modifier(*)  ( ClassDeclaration  |  InterfaceDeclaration )
+    Modifier(*)  ( ClassDeclaration  |  EnumDeclaration  |  InterfaceDeclaration  |  AnnotationTypeDeclaration )
+
+
 
 ClassDeclaration: 
-    NormalClassDeclaration  |
-    EnumDeclaration
-
-InterfaceDeclaration: 
-    NormalInterfaceDeclaration  |
-    AnnotationTypeDeclaration
-
-
-
-NormalClassDeclaration: 
     'class'  Identifier  TypeParameters(?)  ( 'extends'  Type )(?)  ( 'implements'  TypeList )(?)  ClassBody
 
 EnumDeclaration:
     'enum'  Identifier  ( 'implements'  TypeList )(?)  EnumBody
 
-NormalInterfaceDeclaration: 
+InterfaceDeclaration: 
     'interface'  Identifier  TypeParameters(?)  ( 'extends'  TypeList )(?)  InterfaceBody
 
 AnnotationTypeDeclaration:
@@ -146,7 +138,9 @@ MemberDecl:
     ( Identifier  ConstructorDeclaratorRest )         |
     GenericMethodOrConstructorDecl                    |
     ClassDeclaration                                  |
-    InterfaceDeclaration
+    EnumDeclaration                                   |
+    InterfaceDeclaration                              |
+    AnnotationTypeDeclaration
 
 MethodOrFieldDecl:
     Type Identifier MethodOrFieldRest
@@ -186,7 +180,9 @@ InterfaceMemberDecl:
     ( 'void'  Identifier  VoidInterfaceMethodDeclaratorRest )  |
     InterfaceGenericMethodDecl                                 |
     ClassDeclaration                                           |
-    InterfaceDeclaration
+    EnumDeclaration                                            |
+    InterfaceDeclaration                                       |
+    AnnotationTypeDeclaration
 
 InterfaceMethodOrFieldDecl:
     Type  Identifier  InterfaceMethodOrFieldRest
@@ -523,6 +519,7 @@ AnnotationTypeElementDeclaration:
 AnnotationTypeElementRest:
     ( Type  Identifier  AnnotationMethodOrConstantRest  ';' )  |
     ClassDeclaration            |
+    EnumDeclaration             |
     InterfaceDeclaration        |
     AnnotationTypeDeclaration
 
