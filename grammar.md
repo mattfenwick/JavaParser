@@ -138,18 +138,17 @@
         Braces(*)  ( 'throws'  QualifiedIdentifierList )(?)  ';'
     
     FormalParameters: 
-        '('  FormalParameterDecls(?)  ')'
+        '('  sepBy0(FormalParameter, ',')  VarArgs(?)  ')'
     
-    FormalParameterDecls: 
-        VariableModifier(*)  Type  FormalParameterDeclsRest
+    FormalParameter:
+        VariableModifier(*)  Type  IdentBraces
+        
+    VarArgs:
+        VariableModifier(*)  Type  '...'  IdentBraces
     
     VariableModifier:
         'final'     |
         Annotation
-    
-    FormalParameterDeclsRest: 
-        ( IdentBraces  ( ','  FormalParameterDecls )(?) )  |
-        ( '...'  IdentBraces )
     
     
     IdentBraces:
