@@ -2,328 +2,324 @@ Identifier:
     IDENTIFIER
 
 QualifiedIdentifier:
-    Identifier { . Identifier }
+    Identifier  ( '.'  Identifier )(*)
 
 QualifiedIdentifierList: 
-    QualifiedIdentifier { , QualifiedIdentifier }
+    QualifiedIdentifier  ( ','  QualifiedIdentifier )(*)
 
 CompilationUnit: 
-    [[Annotations] package QualifiedIdentifier ;]
-                                {ImportDeclaration} {TypeDeclaration}
+    ( Annotations(?)  'package'  QualifiedIdentifier  ';' )(?)  ImportDeclaration(*)  TypeDeclaration(*)
 
 ImportDeclaration: 
-    import [static] Identifier { . Identifier } [. *] ;
+    'import'  'static'(?)  Identifier  ( '.'  Identifier )(*)  ( '.'  '*' )(?)  ';'
 
 TypeDeclaration: 
-    ClassOrInterfaceDeclaration
-    ;
+    ClassOrInterfaceDeclaration  |  ';'
 
 ClassOrInterfaceDeclaration: 
-    {Modifier} (ClassDeclaration | InterfaceDeclaration)
+    Modifier(*)  ( ClassDeclaration  |  InterfaceDeclaration )
 
 ClassDeclaration: 
-    NormalClassDeclaration
+    NormalClassDeclaration  |
     EnumDeclaration
 
 InterfaceDeclaration: 
-    NormalInterfaceDeclaration
+    NormalInterfaceDeclaration  |
     AnnotationTypeDeclaration
 
 
 
 NormalClassDeclaration: 
-    class Identifier [TypeParameters]
-                                [extends Type] [implements TypeList] ClassBody
+    'class'  Identifier  TypeParameters(?)  ( 'extends'  Type )(?)  ( 'implements'  TypeList )(?)  ClassBody
 
 EnumDeclaration:
-    enum Identifier [implements TypeList] EnumBody
+    'enum'  Identifier  ( 'implements'  TypeList )(?)  EnumBody
 
 NormalInterfaceDeclaration: 
-    interface Identifier [TypeParameters] [extends TypeList] InterfaceBody
+    'interface'  Identifier  TypeParameters(?)  ( 'extends'  TypeList )(?)  InterfaceBody
 
 AnnotationTypeDeclaration:
-    @ interface Identifier AnnotationTypeBody
+    '@'  'interface'  Identifier  AnnotationTypeBody
 
 Type:
-    BasicType {[]}
-    ReferenceType  {[]}
+    ( BasicType  ( '['  ']' )(*) )       |
+    ( ReferenceType  ( '['  ']' )(*) )
 
 BasicType: 
-    byte
-    short
-    char
-    int
-    long
-    float
-    double
-    boolean
+    'byte'     |
+    'short'    |
+    'char'     |
+    'int'      |
+    'long'     |
+    'float'    |
+    'double'   |
+    'boolean'
 
 ReferenceType:
-    Identifier [TypeArguments] { . Identifier [TypeArguments] }
+    Identifier  TypeArguments(?)  ( '.'  Identifier  TypeArguments(?) )(*)
 
 TypeArguments: 
-    < TypeArgument { , TypeArgument } >
+    '<'  TypeArgument  ( ','  TypeArgument )(*)  '>'
 
 TypeArgument:  
-    ReferenceType
-    ? [ (extends | super) ReferenceType ]
+    ReferenceType  |
+    ( '?'  ( ( 'extends'  |  'super' )  ReferenceType )(?) )
 
 NonWildcardTypeArguments:
-    < TypeList >
+    '<'  TypeList  '>'
 
 TypeList:  
-    ReferenceType { , ReferenceType }
-
+    ReferenceType  ( ','  ReferenceType )(*)
 
 
 TypeArgumentsOrDiamond:
-    < > 
+    ( '<'  '>' )  | 
     TypeArguments
 
 NonWildcardTypeArgumentsOrDiamond:
-    < >
+    ( '<'  '>' )  |
     NonWildcardTypeArguments
 
 
 
 TypeParameters:
-    < TypeParameter { , TypeParameter } >
+    '<'  TypeParameter  ( ','  TypeParameter )(*)  '>'
 
 TypeParameter:
-    Identifier [extends Bound]
+    Identifier  ( 'extends'  Bound )(?)
 
 Bound:  
-    ReferenceType { & ReferenceType }
+    ReferenceType  ( '&'  ReferenceType )(*)
 
 Modifier: 
-    Annotation
-    public
-    protected
-    private
-    static 
-    abstract
-    final
-    native
-    synchronized
-    transient
-    volatile
-    strictfp
+    Annotation      |
+    'public'        |
+    'protected'     |
+    'private'       |
+    'static'        |
+    'abstract'      |
+    'final'         |
+    'native'        |
+    'synchronized'  |
+    'transient'     |
+    'volatile'      |
+    'strictfp'      
 
 Annotations:
-    Annotation {Annotation}
+    Annotation  Annotation(*)
 
 Annotation:
-    @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
+    '@'  QualifiedIdentifier  ( '('  AnnotationElement(?)  ')' )(?)
 
 AnnotationElement:
-    ElementValuePairs
+    ElementValuePairs  |
     ElementValue
 
 ElementValuePairs:
-    ElementValuePair { , ElementValuePair }
+    ElementValuePair  ( ','  ElementValuePair )(*)
 
 ElementValuePair:
-    Identifier = ElementValue
+    Identifier  '='  ElementValue
     
 ElementValue:
-    Annotation
-    Expression1 
+    Annotation    |
+    Expression1   |
     ElementValueArrayInitializer
 
 ElementValueArrayInitializer:
-    { [ElementValues] [,] }
+    '{'  ElementValues(?)  ','(?)  '}'
 
 ElementValues:
-    ElementValue { , ElementValue }
+    ElementValue  ( ','  ElementValue )(*)
 
 ClassBody: 
-    { { ClassBodyDeclaration } }
+    '{'  ClassBodyDeclaration(*)  '}'
 
 ClassBodyDeclaration:
-    ; 
-    {Modifier} MemberDecl
-    [static] Block
+    ';'                          | 
+    ( Modifier(*)  MemberDecl )  |
+    ( 'static'(?)  Block )
 
 MemberDecl:
-    MethodOrFieldDecl
-    void Identifier VoidMethodDeclaratorRest
-    Identifier ConstructorDeclaratorRest
-    GenericMethodOrConstructorDecl
-    ClassDeclaration
+    MethodOrFieldDecl                                 |
+    ( 'void'  Identifier  VoidMethodDeclaratorRest )  |
+    ( Identifier  ConstructorDeclaratorRest )         |
+    GenericMethodOrConstructorDecl                    |
+    ClassDeclaration                                  |
     InterfaceDeclaration
 
 MethodOrFieldDecl:
     Type Identifier MethodOrFieldRest
 
 MethodOrFieldRest:  
-    FieldDeclaratorsRest ;
+    ( FieldDeclaratorsRest  ';' )  |
     MethodDeclaratorRest
 
 FieldDeclaratorsRest:  
-    VariableDeclaratorRest { , VariableDeclarator }
+    VariableDeclaratorRest  ( ','  VariableDeclarator )(*)
 
 MethodDeclaratorRest:
-    FormalParameters {[]} [throws QualifiedIdentifierList] (Block | ;)
+    FormalParameters  ( '['  ']' )(*)  ( 'throws'  QualifiedIdentifierList )(?)  ( Block  |  ',' )
 
 VoidMethodDeclaratorRest:
-    FormalParameters [throws QualifiedIdentifierList] (Block | ;)
+    FormalParameters  ( 'throws'  QualifiedIdentifierList )(?)  ( Block  |  ';' )
 
 ConstructorDeclaratorRest:
-    FormalParameters [throws QualifiedIdentifierList] Block
+    FormalParameters  ( 'throws'  QualifiedIdentifierList )(?)  Block
 
 GenericMethodOrConstructorDecl:
-    TypeParameters GenericMethodOrConstructorRest
+    TypeParameters  GenericMethodOrConstructorRest
 
 GenericMethodOrConstructorRest:
-    (Type | void) Identifier MethodDeclaratorRest
-    Identifier ConstructorDeclaratorRest
+    ( ( Type  |  'void' )  Identifier  MethodDeclaratorRest )  |
+    ( Identifier  ConstructorDeclaratorRest )
 
 InterfaceBody: 
-    { { InterfaceBodyDeclaration } }
+    '{'  InterfaceBodyDeclaration(*)  '}'
 
 InterfaceBodyDeclaration:
-    ; 
-    {Modifier} InterfaceMemberDecl
+    ';'  |  
+    ( Modifier(*)  InterfaceMemberDecl )
 
 InterfaceMemberDecl:
-    InterfaceMethodOrFieldDecl
-    void Identifier VoidInterfaceMethodDeclaratorRest
-    InterfaceGenericMethodDecl
-    ClassDeclaration
+    InterfaceMethodOrFieldDecl                                 |
+    ( 'void'  Identifier  VoidInterfaceMethodDeclaratorRest )  |
+    InterfaceGenericMethodDecl                                 |
+    ClassDeclaration                                           |
     InterfaceDeclaration
 
 InterfaceMethodOrFieldDecl:
-    Type Identifier InterfaceMethodOrFieldRest
+    Type  Identifier  InterfaceMethodOrFieldRest
 
 InterfaceMethodOrFieldRest:
-    ConstantDeclaratorsRest ;
+    ( ConstantDeclaratorsRest  ';' )  |
     InterfaceMethodDeclaratorRest
 
 ConstantDeclaratorsRest: 
-    ConstantDeclaratorRest { , ConstantDeclarator }
+    ConstantDeclaratorRest  ( ','  ConstantDeclarator )(*)
 
 ConstantDeclaratorRest: 
-    {[]} = VariableInitializer
+    ( '['  ']' )(*)  '='  VariableInitializer
 
 ConstantDeclarator: 
-    Identifier ConstantDeclaratorRest
+    Identifier  ConstantDeclaratorRest
 
 InterfaceMethodDeclaratorRest:
-    FormalParameters {[]} [throws QualifiedIdentifierList] ; 
+    FormalParameters  ( '['  ']' )(*)  ( 'throws'  QualifiedIdentifierList )(?)  ';' 
 
 VoidInterfaceMethodDeclaratorRest:
-    FormalParameters [throws QualifiedIdentifierList] ;  
+    FormalParameters  ( 'throws'  QualifiedIdentifierList )(?)  ';'
 
 InterfaceGenericMethodDecl:
-    TypeParameters (Type | void) Identifier InterfaceMethodDeclaratorRest
+    TypeParameters  ( Type  |  'void' )  Identifier  InterfaceMethodDeclaratorRest
 
 FormalParameters: 
-    ( [FormalParameterDecls] )
+    '('  FormalParameterDecls(?)  ')'
 
 FormalParameterDecls: 
-    {VariableModifier}  Type FormalParameterDeclsRest
+    VariableModifier(*)  Type  FormalParameterDeclsRest
 
 VariableModifier:
-    final
+    'final'     |
     Annotation
 
 FormalParameterDeclsRest: 
-    VariableDeclaratorId [, FormalParameterDecls]
-    ... VariableDeclaratorId
+    ( VariableDeclaratorId  ( ','  FormalParameterDecls )(?) )  |
+    ( '...'  VariableDeclaratorId )
 
 
 
 VariableDeclaratorId:
-    Identifier {[]}
+    Identifier  ( '['  ']' )(*)
 
 
 
 VariableDeclarators:
-    VariableDeclarator { , VariableDeclarator }
+    VariableDeclarator  ( ','  VariableDeclarator )(*)
 
 VariableDeclarator:
-    Identifier VariableDeclaratorRest
+    Identifier  VariableDeclaratorRest
 
 VariableDeclaratorRest:
-    {[]} [ = VariableInitializer ]
+    ( '['  ']' )(*)  ( '='  VariableInitializer )(?)
 
 VariableInitializer:
-    ArrayInitializer
+    ArrayInitializer  |
     Expression
 
 ArrayInitializer:
-    { [ VariableInitializer { , VariableInitializer } [,] ] }
+    '{'  ( VariableInitializer  ( ','  VariableInitializer )(*)  ','(?) )(?)  '}'
 
 Block: 
-    { BlockStatements }
+    '{'  BlockStatements  '}'
 
 BlockStatements: 
-    { BlockStatement }
+    BlockStatement(*)
 
 BlockStatement:
-    LocalVariableDeclarationStatement
-    ClassOrInterfaceDeclaration
-    [Identifier :] Statement
+    LocalVariableDeclarationStatement      |
+    ClassOrInterfaceDeclaration            |
+    ( ( Identifier  ':' )(?)  Statement )
 
 LocalVariableDeclarationStatement:
-    { VariableModifier }  Type VariableDeclarators ;
+    VariableModifier(*)  Type  VariableDeclarators  ';'
 
 Statement:
-    Block
-    ;
-    Identifier : Statement
-    StatementExpression ;
-    if ParExpression Statement [else Statement] 
-    assert Expression [: Expression] ;
-    switch ParExpression { SwitchBlockStatementGroups } 
-    while ParExpression Statement
-    do Statement while ParExpression ;
-    for ( ForControl ) Statement
-    break [Identifier] ;
-    continue [Identifier] ;
-    return [Expression] ;
-    throw Expression ;
-    synchronized ParExpression Block
-    try Block (Catches | [Catches] Finally)
-    try ResourceSpecification Block [Catches] [Finally]
+    Block  |
+    ';'    |
+    ( Identifier  ':'  Statement )  |
+    ( StatementExpression  ';' )    |
+    ( 'if'  ParExpression  Statement  ( 'else'  Statement )(?) )       | 
+    ( 'assert'  Expression  ( ':'  Expression )(?)  ';' )              |
+    ( 'switch'  ParExpression  '{'  SwitchBlockStatementGroups  '}' )  | 
+    ( 'while'  ParExpression  Statement )             |
+    ( 'do'  Statement  'while'  ParExpression  ';' )  |
+    ( 'for'  '('  ForControl  ')'  Statement )        |
+    ( 'break'  Identifier(?)  ';' )           |
+    ( 'continue'  Identifier(?)  ';' )        |
+    ( 'return'  Expression(?)  ';' )          |
+    ( 'throw'  Expression  ';' )              |
+    ( 'synchronized'  ParExpression  Block )  |
+    ( 'try'  Block  ( Catches  |  ( Catches(?)  Finally ) ) )  |
+    ( 'try'  ResourceSpecification  Block  Catches(?)  Finally(?) )
 
 StatementExpression: 
     Expression
 
 Catches:
-    CatchClause { CatchClause }
+    CatchClause  CatchClause(*)
 
-CatchClause:  
-    catch ( {VariableModifier} CatchType Identifier ) Block
+CatchClause:
+    'catch'  '('  VariableModifier(*)  CatchType  Identifier  ')'  Block
 
 CatchType:
-    QualifiedIdentifier { | QualifiedIdentifier }
+    QualifiedIdentifier  ( '|'  QualifiedIdentifier )(*)
 
 Finally:
-    finally Block
+    'finally'  Block
 
 ResourceSpecification:
-    ( Resources [;] )
+    '('  Resources  ';'(?)  ')'
 
 Resources:
-    Resource { ; Resource }
+    Resource  ( ';'  Resource )(*)
 
 Resource:
-    {VariableModifier} ReferenceType VariableDeclaratorId = Expression 
+    VariableModifier(*)  ReferenceType  VariableDeclaratorId  '='  Expression 
 
 SwitchBlockStatementGroups: 
-    { SwitchBlockStatementGroup }
+    SwitchBlockStatementGroup(*)
 
 SwitchBlockStatementGroup: 
-    SwitchLabels BlockStatements
+    SwitchLabels  BlockStatements
 
 SwitchLabels:
-    SwitchLabel { SwitchLabel }
+    SwitchLabel  SwitchLabel(*)
 
 SwitchLabel: 
-    case Expression :
-    case EnumConstantName :
-    default :
+    ( 'case'  Expression  ':'       )  |
+    ( 'case'  EnumConstantName  ':' )  |
+    ( 'default'  ':' )
 
 EnumConstantName:
     Identifier
@@ -331,198 +327,209 @@ EnumConstantName:
 
 
 ForControl:
-    ForVarControl
-    ForInit ; [Expression] ; [ForUpdate]
+    ForVarControl   |
+    ( ForInit  ';'  Expression(?)  ';'  ForUpdate(?) )
 
 ForVarControl:
-    {VariableModifier} Type VariableDeclaratorId  ForVarControlRest
+    VariableModifier(*)  Type  VariableDeclaratorId  ForVarControlRest
 
 ForVarControlRest:
-    ForVariableDeclaratorsRest ; [Expression] ; [ForUpdate]
-    : Expression
+    ( ForVariableDeclaratorsRest  ';'  Expression(?)  ';'  ForUpdate(?) )   |
+    ( ':'  Expression )
 
 ForVariableDeclaratorsRest:
-    [= VariableInitializer] { , VariableDeclarator }
+    ( '='  VariableInitializer )(?)  ( ','  VariableDeclarator )(*)
 
 ForInit: 
 ForUpdate:
-    StatementExpression { , StatementExpression }    
+    StatementExpression  ( ','  StatementExpression )(*)
 
 Expression: 
-    Expression1 [AssignmentOperator Expression1]
+    Expression1  ( AssignmentOperator  Expression1 )(?)
 
 AssignmentOperator: 
-    = 
-    +=
-    -= 
-    *=
-    /=
-    &=
-    |=
-    ^=
-    %=
-    <<=
-    >>=
-    >>>=
+    '='    |
+    '+='   | 
+    '-='   |
+    '*='   |
+    '/='   |
+    '&='   |
+    '|='   |
+    '^='   |
+    '%='   |
+    '<<='  |
+    '>>='  |
+    '>>>='
 
 Expression1: 
-    Expression2 [Expression1Rest]
+    Expression2  Expression1Rest(?)
 
 Expression1Rest: 
-    ? Expression : Expression1
+    '?'  Expression  ':'  Expression1
 
 Expression2:
-    Expression3 [Expression2Rest]
+    Expression3  Expression2Rest(?)
 
 Expression2Rest:
-    { InfixOp Expression3 }
-    instanceof Type
+    ( InfixOp Expression3 )(*)   |
+    ( 'instanceof'  Type )
 
 InfixOp: 
-    || 
-    &&
-    |
-    ^
-    &
-    ==
-    !=
-    <
-    >
-    <=
-    >=
-    <<
-    >>
-    >>>
-    +
-    -
-    *
-    /
-    %
+    '||'  | 
+    '&&'  |
+    '|'   |
+    '^'   |
+    '&'   |
+    '=='  |
+    '!='  |
+    '<'   |
+    '>'   |
+    '<='  |
+    '>='  |
+    '<<'  |
+    '>>'  |
+    '>>>' |
+    '+'   |
+    '-'   |
+    '*'   |
+    '/'   |
+    '%'
 
 Expression3: 
-    PrefixOp Expression3
-    ( (Expression | Type) ) Expression3
-    Primary { Selector } { PostfixOp }
+    ( PrefixOp  Expression3 )  |
+    ( '('  ( Expression  |  Type )  ')'  Expression3 )  |
+    ( Primary  Selector(*)  PostfixOp(*) )
 
 PrefixOp: 
-    ++
-    --
-    !
-    ~
-    +
-    -
+    '++' |
+    '--' |
+    '!'  |
+    '~'  |
+    '+'  |
+    '-'
 
 PostfixOp: 
-    ++
-    --
+    '++'  |
+    '--'
 
 Primary: 
-    Literal
-    ParExpression
-    this [Arguments]
-    super SuperSuffix
-    new Creator
-    NonWildcardTypeArguments (ExplicitGenericInvocationSuffix | this Arguments)
-    Identifier { . Identifier } [IdentifierSuffix]
-    BasicType {[]} . class
-    void . class
+    Literal                   |
+    ParExpression             |
+    ( 'this'  Arguments(?) )  |
+    ( 'super'  SuperSuffix )  |
+    ( 'new'  Creator )        |
+    ( NonWildcardTypeArguments  ( ExplicitGenericInvocationSuffix  |  ( 'this' Arguments ) ) )  |
+    ( Identifier  ( '.'  Identifier )(*)  IdentifierSuffix(?) )                                 |
+    ( BasicType  ( '['  ']' )(*)  '.'  'class' )                                                |
+    ( 'void'  '.'  'class' )
 
 
 
 Literal:
-    IntegerLiteral
-    FloatingPointLiteral
-    CharacterLiteral    
-    StringLiteral   
-    BooleanLiteral
+    IntegerLiteral        |
+    FloatingPointLiteral  |
+    CharacterLiteral      |
+    StringLiteral         |
+    BooleanLiteral        |
     NullLiteral
 
 ParExpression: 
-    ( Expression )
+    '('  Expression  ')'
 
 Arguments:
-    ( [ Expression { , Expression } ] )
+    '('  ( Expression  ( ','  Expression )(*) )(?)  ')'
 
 SuperSuffix: 
-    Arguments 
-    . Identifier [Arguments]
+    Arguments   | 
+    ( '.'  Identifier  Arguments(?) )
 
 ExplicitGenericInvocationSuffix: 
-    super SuperSuffix
-    Identifier Arguments
+    ( 'super'  SuperSuffix )  |
+    ( Identifier  Arguments )
 
 Creator:  
-    NonWildcardTypeArguments CreatedName ClassCreatorRest
-    CreatedName (ClassCreatorRest | ArrayCreatorRest)
+    ( NonWildcardTypeArguments  CreatedName  ClassCreatorRest )  |
+    ( CreatedName  ( ClassCreatorRest  |  ArrayCreatorRest ) )
 
 CreatedName:   
-    Identifier [TypeArgumentsOrDiamond] { . Identifier [TypeArgumentsOrDiamond] }
+    Identifier  TypeArgumentsOrDiamond(?)  ( '.'  Identifier  TypeArgumentsOrDiamond(?) )(*)
 
 ClassCreatorRest: 
-    Arguments [ClassBody]
+    Arguments  ClassBody(?)
 
 ArrayCreatorRest:
-    [ (] {[]} ArrayInitializer  |  Expression ] {[ Expression ]} {[]})
+    '['  ( ( ']'  
+             ( '['  ']' )(*)
+             ArrayInitializer )  |  
+           ( Expression  
+             ']'  
+             ( '['  Expression  ']' )(*)  
+             ( '['  ']' )(*) ) )
 
 
 
 IdentifierSuffix:
-    [ ({[]} . class | Expression) ]
-    Arguments 
-    . (class | ExplicitGenericInvocation | this | super Arguments |
-                                new [NonWildcardTypeArguments] InnerCreator)
+    ( '['  ( ( ( '['  ']' )(*)  '.'  'class' )  |  
+             Expression )
+      ']' )         |
+    Arguments       |
+    ( '.'  ( 'class'                   | 
+             ExplicitGenericInvocation | 
+             'this'                    | 
+             ( 'super'  Arguments )    |
+             ( 'new'  NonWildcardTypeArguments(?)  InnerCreator ) ) )
 
 ExplicitGenericInvocation:
-    NonWildcardTypeArguments ExplicitGenericInvocationSuffix
+    NonWildcardTypeArguments  ExplicitGenericInvocationSuffix
 
 InnerCreator:  
-    Identifier [NonWildcardTypeArgumentsOrDiamond] ClassCreatorRest
+    Identifier  NonWildcardTypeArgumentsOrDiamond(?)  ClassCreatorRest
 
 
 
 Selector:
-    . Identifier [Arguments]
-    . ExplicitGenericInvocation
-    . this
-    . super SuperSuffix
-    . new [NonWildcardTypeArguments] InnerCreator
-    [ Expression ]
+    ( '.'  Identifier  Arguments(?) )  |
+    ( '.'  ExplicitGenericInvocation ) |
+    ( '.'  'this' )                    |
+    ( '.'  'super'  SuperSuffix )      |
+    ( '.'  'new'  NonWildcardTypeArguments(?)  InnerCreator )  |
+    ( '['  Expression  ']' )
 
 EnumBody:
-    { [EnumConstants] [,] [EnumBodyDeclarations] }
+    '{'  EnumConstants(?)  ','(?)  EnumBodyDeclarations(?)  '}'
 
 EnumConstants:
-    EnumConstant
-    EnumConstants , EnumConstant
+    EnumConstant  |
+    ( EnumConstants  ','  EnumConstant )
 
 EnumConstant:
-    [Annotations] Identifier [Arguments] [ClassBody]
+    Annotations(?)  Identifier  Arguments(?)  ClassBody(?)
 
 EnumBodyDeclarations:
-    ; {ClassBodyDeclaration}
+    ','  ClassBodyDeclaration(*)
 
 
 
 AnnotationTypeBody:
-    { [AnnotationTypeElementDeclarations] }
+    '{'  AnnotationTypeElementDeclarations(?)  '}'
 
 AnnotationTypeElementDeclarations:
-    AnnotationTypeElementDeclaration
-    AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration
+    AnnotationTypeElementDeclaration  |
+    ( AnnotationTypeElementDeclarations  AnnotationTypeElementDeclaration )
 
 AnnotationTypeElementDeclaration:
-    {Modifier} AnnotationTypeElementRest
+    Modifier(*)  AnnotationTypeElementRest
 
 AnnotationTypeElementRest:
-    Type Identifier AnnotationMethodOrConstantRest ;
-    ClassDeclaration
-    InterfaceDeclaration
-    EnumDeclaration  
+    ( Type  Identifier  AnnotationMethodOrConstantRest  ';' )  |
+    ClassDeclaration            |
+    InterfaceDeclaration        |
+    EnumDeclaration             |
     AnnotationTypeDeclaration
 
 AnnotationMethodOrConstantRest:
-    AnnotationMethodRest
+    AnnotationMethodRest        |
     ConstantDeclaratorsRest  
 
 AnnotationMethodRest:
-    ( ) [[]] [default ElementValue]
+    '('  ')'  ( '['  ']' )(?)  ( 'default'  ElementValue )(?)
