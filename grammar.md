@@ -90,45 +90,29 @@
         '{'  ClassBodyDeclaration(*)  '}'
     
     ClassBodyDeclaration:
-        ';'                          | 
-        ( Modifier(*)  MemberDecl )  |
+        ';'                           | 
+        ( Modifier(*)  ClassMember )  |
         ( 'static'(?)  Block )
     
-    MemberDecl:
-        MethodOrFieldDecl                                 |
-        ( 'void'  Identifier  VoidMethodDeclaratorRest )  |
-        ( Identifier  ConstructorDeclaratorRest )         |
-        GenericMethodOrConstructorDecl                    |
-        ClassDeclaration                                  |
-        EnumDeclaration                                   |
-        Interface                                         |
+    ClassMember:
+        Method                               |
+        Field                                |
+        Constructor                          |
+        ClassDeclaration                     |
+        EnumDeclaration                      |
+        Interface                            |
         AnnotationTypeDeclaration
     
-    MethodOrFieldDecl:
-        Type Identifier MethodOrFieldRest
+    Method:
+        TypeParameters(?)  ( Type  |  'void' )  Identifier  FormalParameters  Braces(*)  
+        ( 'throws'  QualifiedIdentifierList )(?)  ( Block  |  ';' )
     
-    MethodOrFieldRest:  
-        ( FieldDeclaratorsRest  ';' )  |
-        MethodDeclaratorRest
-    
-    FieldDeclaratorsRest:  
-        VariableDeclaratorRest  ( ','  VariableDeclarator )(*)
-    
-    MethodDeclaratorRest:
-        FormalParameters  Braces(*)  ( 'throws'  QualifiedIdentifierList )(?)  ( Block  |  ',' )
-    
-    VoidMethodDeclaratorRest:
-        FormalParameters  ( 'throws'  QualifiedIdentifierList )(?)  ( Block  |  ';' )
-    
-    ConstructorDeclaratorRest:
-        FormalParameters  ( 'throws'  QualifiedIdentifierList )(?)  Block
-    
-    GenericMethodOrConstructorDecl:
-        TypeParameters  GenericMethodOrConstructorRest
-    
-    GenericMethodOrConstructorRest:
-        ( ( Type  |  'void' )  Identifier  MethodDeclaratorRest )  |
-        ( Identifier  ConstructorDeclaratorRest )
+    Field:
+        Type Identifier  VariableDeclaratorRest  ( ','  VariableDeclarator )(*)  ';'
+
+    Constructor:
+        TypeParameters(?)  Identifier  FormalParameters  
+        ( 'throws'  QualifiedIdentifierList )(?)  Block
     
     InterfaceBody: 
         '{'  ( ';'  |  ( Modifier(*)  InterfaceMember ) )(*)  '}'
