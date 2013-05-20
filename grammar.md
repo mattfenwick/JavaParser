@@ -26,13 +26,15 @@
         ( 'implements'  TypeList )(?)  ClassBody
     
     EnumDeclaration:
-        'enum'  Identifier  ( 'implements'  TypeList )(?)  EnumBody
+        'enum'  Identifier  ( 'implements'  TypeList )(?)
+        '{'  sepBy0(EnumConstant, ',')  ','(?)  ( ';'  ClassBodyDeclaration(*) )(?)  '}'
     
     Interface: 
-        'interface'  Identifier  TypeParameters(?)  ( 'extends'  TypeList )(?)  InterfaceBody
+        'interface'  Identifier  TypeParameters(?)  ( 'extends'  TypeList )(?)
+        '{'  ( ';'  |  ( Modifier(*)  InterfaceMember ) )(*)  '}'
     
     AnnotationType:
-        '@'  'interface'  Identifier  AnnotationTypeBody
+        '@'  'interface'  Identifier  '{'  AnnotationTypeElement(*)  '}'    
     
     Type:
         ( BasicType  |  ReferenceType )  Braces(*)
@@ -110,9 +112,6 @@
         TypeParameters(?)  Identifier  FormalParameters  
         ( 'throws'  QualifiedIdentifierList )(?)  Block
     
-    InterfaceBody: 
-        '{'  ( ';'  |  ( Modifier(*)  InterfaceMember ) )(*)  '}'
-    
     InterfaceMember:
         InterfaceField      |
         InterfaceMethod     |
@@ -138,15 +137,9 @@
         'final'     |
         Annotation
     
-    EnumBody:
-        '{'  sepBy0(EnumConstant, ',')  ','(?)  ( ';'  ClassBodyDeclaration(*) )(?)  '}'
-    
     EnumConstant:
         Annotation(*)  Identifier  Arguments(?)  ClassBody(?)
     
-    
-    AnnotationTypeBody:
-        '{'  AnnotationTypeElement(*)  '}'
     
     AnnotationTypeElement:
         Modifier(*)  ( AnnotationMethod  |  InterfaceField  |  TypeDeclaration )
