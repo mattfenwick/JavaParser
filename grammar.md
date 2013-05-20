@@ -8,15 +8,12 @@
         sepBy1(QualifiedIdentifier, ',')
     
     CompilationUnit: 
-        ( Annotation(*)  'package'  QualifiedIdentifier  ';' )(?)  ImportDeclaration(*)  TypeDeclaration(*)
+        ( Annotation(*)  'package'  QualifiedIdentifier  ';' )(?)  ImportDeclaration(*)  ( TypeDeclaration  |  ';' )(*)
     
     ImportDeclaration: 
         'import'  'static'(?)  sepBy1(Identifier, '.')  ( '.'  '*' )(?)  ';'
     
     TypeDeclaration: 
-        ClassOrInterfaceDeclaration  |  ';'
-    
-    ClassOrInterfaceDeclaration: 
         Modifier(*)  ( ClassDeclaration  |  EnumDeclaration  |  InterfaceDeclaration  |  AnnotationTypeDeclaration )
     
     
@@ -219,7 +216,7 @@
     
     BlockStatement:
         LocalVariableDeclarationStatement      |
-        ClassOrInterfaceDeclaration            |
+        TypeDeclaration                        |
         ( ( Identifier  ':' )(?)  Statement )
     
     LocalVariableDeclarationStatement:
@@ -229,7 +226,7 @@
         Block  |
         ';'    |
         ( Identifier  ':'  Statement )  |
-        ( StatementExpression  ';' )    |
+        ( Expression  ';' )    |
         ( 'if'  ParExpression  Statement  ( 'else'  Statement )(?) )    | 
         ( 'assert'  Expression  ( ':'  Expression )(?)  ';' )           |
         ( 'switch'  ParExpression  '{'  SwitchBlock  '}' )    | 
@@ -243,9 +240,6 @@
         ( 'synchronized'  ParExpression  Block )  |
         ( 'try'  Block  ( Catch(+)  |  ( Catch(*)  Finally ) ) )  |
         ( 'try'  ResourceSpecification  Block  Catch(*)  Finally(?) )
-    
-    StatementExpression: 
-        Expression
     
     Catch:
         'catch'  '('  VariableModifier(*)  sepBy1(QualfiedIdentifier, '|')  Identifier  ')'  Block
@@ -286,10 +280,10 @@
         ( '='  VariableInitializer )(?)  ( ','  VariableDeclarator )(*)
     
     ForInit: 
-        sepBy1(StatementExpression, ',')
+        sepBy1(Expression, ',')
     
     ForUpdate:
-        sepBy1(StatementExpression, ',')
+        sepBy1(Expression, ',')
     
     Expression: 
         Expression1  ( AssignmentOperator  Expression1 )(?)
