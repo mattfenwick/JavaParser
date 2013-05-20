@@ -107,7 +107,7 @@
         ( 'throws'  QualifiedIdentifierList )(?)  ( Block  |  ';' )
     
     Field:
-        Type Identifier  VariableDeclaratorRest  ( ','  VariableDeclarator )(*)  ';'
+        Type Identifier  Braces(*)  ( '='  VariableInitializer )(?)  ( ','  VariableDeclarator )(*)  ';'
 
     Constructor:
         TypeParameters(?)  Identifier  FormalParameters  
@@ -148,22 +148,16 @@
         Annotation
     
     FormalParameterDeclsRest: 
-        ( VariableDeclaratorId  ( ','  FormalParameterDecls )(?) )  |
-        ( '...'  VariableDeclaratorId )
+        ( IdentBraces  ( ','  FormalParameterDecls )(?) )  |
+        ( '...'  IdentBraces )
     
     
-    VariableDeclaratorId:
+    IdentBraces:
         Identifier  Braces(*)
     
     
-    VariableDeclarators:
-        sepBy1(VariableDeclarator, ',')
-    
     VariableDeclarator:
-        Identifier  VariableDeclaratorRest
-    
-    VariableDeclaratorRest:
-        Braces(*)  ( '='  VariableInitializer )(?)
+        Identifier  Braces(*)  ( '='  VariableInitializer )(?)
     
     VariableInitializer:
         ArrayInitializer  |
@@ -181,7 +175,7 @@
         ( ( Identifier  ':' )(?)  Statement )
     
     LocalVariableDeclarationStatement:
-        VariableModifier(*)  Type  VariableDeclarators  ';'
+        VariableModifier(*)  Type  sepBy1(VariableDeclarator, ',')  ';'
     
     Statement:
         Block                                                           |
@@ -212,7 +206,7 @@
         '('  sepBy1(Resource, ';')  ';'(?)  ')'
     
     Resource:
-        VariableModifier(*)  ReferenceType  VariableDeclaratorId  '='  Expression 
+        VariableModifier(*)  ReferenceType  IdentBraces  '='  Expression 
     
     SwitchBlock: 
         ( SwitchLabel(+)  BlockStatement(*) )(*)
@@ -231,7 +225,7 @@
         ( ForInit  ';'  Expression(?)  ';'  ForUpdate(?) )
     
     ForVarControl:
-        VariableModifier(*)  Type  VariableDeclaratorId  ForVarControlRest
+        VariableModifier(*)  Type  IdentBraces  ForVarControlRest
     
     ForVarControlRest:
         ( ForVariableDeclaratorsRest  ';'  Expression(?)  ';'  ForUpdate(?) )   |
