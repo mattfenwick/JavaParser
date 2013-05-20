@@ -12,15 +12,14 @@
     
     CompilationUnit: 
         ( Annotation(*)  'package'  QualifiedIdentifier  ';' )(?)  
-        ImportDeclaration(*)  ( TypeDeclaration  |  ';' )(*)
+        ImportDeclaration(*)  
+        ( ( Modifier(*)  TypeDeclaration )  |  ';' )(*)
     
     ImportDeclaration: 
         'import'  'static'(?)  sepBy1(Identifier, '.')  ( '.'  '*' )(?)  ';'
     
     TypeDeclaration: 
-        Modifier(*)  ( ClassDeclaration    |  EnumDeclaration    |  
-                       Interface           |  AnnotationType )
-    
+        ClassDeclaration  |  EnumDeclaration  |  Interface  |  AnnotationType
     
     ClassDeclaration: 
         'class'  Identifier  TypeParameters(?)  ( 'extends'  Type )(?)  
@@ -98,10 +97,7 @@
         Method              |
         Field               |
         Constructor         |
-        ClassDeclaration    |
-        EnumDeclaration     |
-        Interface           |
-        AnnotationType
+        TypeDeclaration
     
     Method:
         TypeParameters(?)  ( Type  |  'void' )  Identifier  FormalParameters  Braces(*)  
@@ -120,10 +116,7 @@
     InterfaceMember:
         InterfaceField      |
         InterfaceMethod     |
-        ClassDeclaration    |
-        EnumDeclaration     |
-        Interface           |
-        AnnotationType
+        TypeDeclaration
     
     InterfaceField:
         Type  sepBy1(Identifier  Braces(*)  '='  VariableInitializer, ',')  ';'
@@ -156,8 +149,7 @@
         '{'  AnnotationTypeElement(*)  '}'
     
     AnnotationTypeElement:
-        Modifier(*)  ( AnnotationMethod  |  InterfaceField    |  ClassDeclaration  |
-                       EnumDeclaration   |  Interface         |  AnnotationType )
+        Modifier(*)  ( AnnotationMethod  |  InterfaceField  |  TypeDeclaration )
     
     AnnotationMethod:
         Type  Identifier  '('  ')'  Braces(?)  ( 'default'  ElementValue )(?)  ';'
@@ -182,7 +174,7 @@
     
     BlockStatement:
         LocalVariableDecl                      |
-        TypeDeclaration                        |
+        Modifier(*)  TypeDeclaration           |
         ( ( Identifier  ':' )(?)  Statement )
     
     LocalVariableDecl:
