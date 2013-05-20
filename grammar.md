@@ -524,7 +524,6 @@ AnnotationTypeElementRest:
     ( Type  Identifier  AnnotationMethodOrConstantRest  ';' )  |
     ClassDeclaration            |
     InterfaceDeclaration        |
-    EnumDeclaration             |
     AnnotationTypeDeclaration
 
 AnnotationMethodOrConstantRest:
