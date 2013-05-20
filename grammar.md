@@ -136,8 +136,6 @@
     InterfaceMember:
         InterfaceField                    |
         InterfaceMethod                   |
-        VoidInterfaceMethod               |
-        GenericInterfaceMethod            |
         ClassDeclaration                  |
         EnumDeclaration                   |
         Interface                         |
@@ -152,15 +150,9 @@
     ConstantDeclaratorRest: 
         Braces(*)  '='  VariableInitializer
     
-    InterfaceMethod
-        Type  Identifier  FormalParameters  Braces(*)  ( 'throws'  QualifiedIdentifierList )(?)  ';' 
-    
-    VoidInterfaceMethod:
-        'void'  Identifier  FormalParameters  ( 'throws'  QualifiedIdentifierList )(?)  ';'
-    
-    GenericInterfaceMethod:
-        TypeParameters  ( Type  |  'void' )  Identifier  FormalParameters  Braces(*)  
-        ( 'throws'  QualifiedIdentifierList )(?)  ';'
+    InterfaceMethod:
+        TypeParameters(?)  ( Type  |  'void' )  Identifier  FormalParameters  
+        Braces(*)  ( 'throws'  QualifiedIdentifierList )(?)  ';'
     
     FormalParameters: 
         '('  FormalParameterDecls(?)  ')'
