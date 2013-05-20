@@ -170,11 +170,11 @@
         '{'  BlockStatement(*)  '}'
     
     BlockStatement:
-        LocalVariableDeclarationStatement      |
+        LocalVariableDecl                      |
         TypeDeclaration                        |
         ( ( Identifier  ':' )(?)  Statement )
     
-    LocalVariableDeclarationStatement:
+    LocalVariableDecl:
         VariableModifier(*)  Type  sepBy1(VariableDeclarator, ',')  ';'
     
     Statement:
@@ -365,31 +365,21 @@
         ( '['  Expression  ']' )
     
     EnumBody:
-        '{'  EnumConstants(?)  ','(?)  EnumBodyDeclarations(?)  '}'
-    
-    EnumConstants:
-        sepBy1(EnumConstant, ',')
+        '{'  sepBy0(EnumConstant, ',')  ','(?)  ( ';'  ClassBodyDeclaration(*) )(?)  '}'
     
     EnumConstant:
         Annotation(*)  Identifier  Arguments(?)  ClassBody(?)
     
-    EnumBodyDeclarations:
-        ';'  ClassBodyDeclaration(*)
-    
     
     AnnotationTypeBody:
-        '{'  ( Modifier(*)  AnnotationTypeElementRest )(*)  '}'
+        '{'  AnnotationTypeElement(*)  '}'
     
-    AnnotationTypeElementRest:
-        ( Type  Identifier  AnnotationMethodOrConstantRest  ';' )  |
-        ClassDeclaration                                           |
-        EnumDeclaration                                            |
-        Interface                                                  |
-        AnnotationType
+    AnnotationTypeElement:
+        Modifier(*)  ( AnnotationMethod  |  AnnotationConstant  |  ClassDeclaration  |
+                       EnumDeclaration   |  Interface           |  AnnotationType )
     
-    AnnotationMethodOrConstantRest:
-        AnnotationMethodRest        |
-        ConstantDeclaratorsRest  
+    AnnotationMethod:
+        Type  Identifier  '('  ')'  Braces(?)  ( 'default'  ElementValue )(?)  ';'
     
-    AnnotationMethodRest:
-        '('  ')'  Braces(?)  ( 'default'  ElementValue )(?)
+    AnnotationConstant:
+        Type  Identifier  ConstantDeclaratorsRest  ';'
