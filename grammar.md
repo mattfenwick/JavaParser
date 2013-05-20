@@ -85,6 +85,7 @@
     ElementValueArrayInitializer:
         '{'  sepBy0(ElementValue, ',')  ','(?)  '}'
     
+    
     ClassBody: 
         '{'  ClassBodyDeclaration(*)  '}'
     
@@ -143,6 +144,23 @@
     VariableModifier:
         'final'     |
         Annotation
+    
+    EnumBody:
+        '{'  sepBy0(EnumConstant, ',')  ','(?)  ( ';'  ClassBodyDeclaration(*) )(?)  '}'
+    
+    EnumConstant:
+        Annotation(*)  Identifier  Arguments(?)  ClassBody(?)
+    
+    
+    AnnotationTypeBody:
+        '{'  AnnotationTypeElement(*)  '}'
+    
+    AnnotationTypeElement:
+        Modifier(*)  ( AnnotationMethod  |  InterfaceField    |  ClassDeclaration  |
+                       EnumDeclaration   |  Interface         |  AnnotationType )
+    
+    AnnotationMethod:
+        Type  Identifier  '('  ')'  Braces(?)  ( 'default'  ElementValue )(?)  ';'
     
     
     IdentBraces:
@@ -356,20 +374,3 @@
         ( '.'  'super'  SuperSuffix )                              |
         ( '.'  'new'  NonWildcardTypeArguments(?)  InnerCreator )  |
         ( '['  Expression  ']' )
-    
-    EnumBody:
-        '{'  sepBy0(EnumConstant, ',')  ','(?)  ( ';'  ClassBodyDeclaration(*) )(?)  '}'
-    
-    EnumConstant:
-        Annotation(*)  Identifier  Arguments(?)  ClassBody(?)
-    
-    
-    AnnotationTypeBody:
-        '{'  AnnotationTypeElement(*)  '}'
-    
-    AnnotationTypeElement:
-        Modifier(*)  ( AnnotationMethod  |  InterfaceField    |  ClassDeclaration  |
-                       EnumDeclaration   |  Interface         |  AnnotationType )
-    
-    AnnotationMethod:
-        Type  Identifier  '('  ')'  Braces(?)  ( 'default'  ElementValue )(?)  ';'
