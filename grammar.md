@@ -108,7 +108,7 @@
         ( 'throws'  QualifiedIdentifierList )(?)  ( Block  |  ';' )
     
     Field:
-        Type Identifier  Braces(*)  ( '='  VariableInitializer )(?)  ( ','  VariableDeclarator )(*)  ';'
+        Type  sepBy1(VariableDeclarator, ',')  ';'
 
     Constructor:
         TypeParameters(?)  Identifier  FormalParameters  
@@ -232,25 +232,19 @@
     
     
     ForControl:
-        ForVarControl   |
-        ( ForInit  ';'  Expression(?)  ';'  ForUpdate(?) )
+        ForControl1   |  ForControl2  |  ForControl3
+
+    ForControl1:  
+        VariableModifier(*)  Type  sepBy1(VariableDeclarator, ',')  ';'  
+        Expression(?)  ';'  sepBy1(Expression, ',')(?)
     
-    ForVarControl:
-        VariableModifier(*)  Type  IdentBraces  ForVarControlRest
+    ForControl2: 
+        VariableModifier(*)  Type  IdentBraces  ':'  Expression
     
-    ForVarControlRest:
-        ( ForVariableDeclaratorsRest  ';'  Expression(?)  ';'  ForUpdate(?) )   |
-        ( ':'  Expression )
+    ForControl3:
+        sepBy1(Expression, ',')  ';'  Expression(?)  ';'  sepBy1(Expression, ',')(?)
     
-    ForVariableDeclaratorsRest:
-        ( '='  VariableInitializer )(?)  ( ','  VariableDeclarator )(*)
-    
-    ForInit: 
-        sepBy1(Expression, ',')
-    
-    ForUpdate:
-        sepBy1(Expression, ',')
-    
+
     Expression: 
         Expression1  ( AssignmentOperator  Expression1 )(?)
     
