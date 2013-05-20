@@ -125,13 +125,7 @@
         AnnotationType
     
     InterfaceField:
-        Type  Identifier  ConstantDeclaratorsRest  ';'
-    
-    ConstantDeclaratorsRest: 
-        ConstantDeclaratorRest  ( ','  Identifier  ConstantDeclaratorRest )(*)
-    
-    ConstantDeclaratorRest: 
-        Braces(*)  '='  VariableInitializer
+        Type  sepBy1(Identifier  Braces(*)  '='  VariableInitializer, ',')  ';'
     
     InterfaceMethod:
         TypeParameters(?)  ( Type  |  'void' )  Identifier  FormalParameters  
@@ -374,11 +368,8 @@
         '{'  AnnotationTypeElement(*)  '}'
     
     AnnotationTypeElement:
-        Modifier(*)  ( AnnotationMethod  |  AnnotationConstant  |  ClassDeclaration  |
-                       EnumDeclaration   |  Interface           |  AnnotationType )
+        Modifier(*)  ( AnnotationMethod  |  InterfaceField    |  ClassDeclaration  |
+                       EnumDeclaration   |  Interface         |  AnnotationType )
     
     AnnotationMethod:
         Type  Identifier  '('  ')'  Braces(?)  ( 'default'  ElementValue )(?)  ';'
-    
-    AnnotationConstant:
-        Type  Identifier  ConstantDeclaratorsRest  ';'
