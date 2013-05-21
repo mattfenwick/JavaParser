@@ -46,13 +46,15 @@
         typeargs = '<'  sepBy1(TypeArgument, ',')  '>'
     
     TypeArgument:  
-        ReferenceType  |
-        ( '?'  ( ( 'extends'  |  'super' )  ReferenceType )(?) )
+        ReferenceType                       |
+        '?'                                 |
+        ( '?'  'extends'  ReferenceType )   |
+        ( '?'  'super'    ReferenceType )
     
     NonWildcardTypeArguments:
         '<'  TypeList  '>'
     
-    TypeList:  
+    TypeList:
         sepBy1(ReferenceType, ',')
     
     
@@ -60,7 +62,8 @@
         '<'  sepBy1(TypeParameter, ',')  '>'
     
     TypeParameter:
-        Identifier  ( 'extends'  sepBy1(ReferenceType, '&') )(?)
+        Identifier  'extends'  sepBy1(ReferenceType, '&')  |
+        Identifier
     
     Modifier: 
         Annotation     |    'public'      |    'protected'     |
@@ -164,7 +167,8 @@
     BlockStatement:
         LocalVariableDecl                      |
         Modifier(*)  TypeDeclaration           |
-        ( ( Identifier  ':' )(?)  Statement )
+        Statement                              |
+        ( Identifier  ':'  Statement )
     
     LocalVariableDecl:
         VariableModifier(*)  Type  sepBy1(VariableDeclarator, ',')  ';'
@@ -302,31 +306,27 @@
     CreatedName:
         sepBy1(x, '.')
       where
-        x = Identifier  ( ( '<'  '>' )  |  sepBy1(TypeArgument, ',') )(?)
+        x =  Identifier  sepBy1(TypeArgument, ',')  |
+             Identifier  '<'  '>'                   |
+             Identifier
     
     ClassCreatorRest: 
         Arguments  ClassBody(?)
     
     ArrayCreatorRest:
-        '['  ( ( ']'  
-                 Braces(*)
-                 ArrayInitializer )  |  
-               ( Expression  
-                 ']'  
-                 ( '['  Expression  ']' )(*)  
-                 Braces(*) ) )
+        ( ( '['  Expression  ']' )(+)  Braces(*) )  |
+        ( Braces(*)  ArrayInitializer )
     
     
     IdentifierSuffix:
-        ( '['  ( ( Braces(*)  '.'  'class' )  |  
-                 Expression )
-          ']' )         |
-        Arguments       |
-        ( '.'  ( 'class'                   | 
-                 ExplicitGenericInvocation | 
-                 'this'                    | 
-                 ( 'super'  Arguments )    |
-                 ( 'new'  NonWildcardTypeArguments(?)  InnerCreator ) ) )
+        ( '['  Braces(*)  '.'  'class'  ']' )                       |
+        ( '['  Expression  ']' )                                    |
+        Arguments                                                   |
+        ( '.'  'new'  NonWildcardTypeArguments(?)  InnerCreator )   |
+        ( '.'  'class' )                                            |
+        ( '.'  ExplicitGenericInvocation )                          |
+        ( '.'  'this' )                                             |
+        ( '.'  'super'  Arguments )
     
     ExplicitGenericInvocation:
         NonWildcardTypeArguments  ExplicitGenericInvocationSuffix
