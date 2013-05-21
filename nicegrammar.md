@@ -563,8 +563,7 @@ PostDecrementExpression:
 UnaryExpression:
     PreIncrementExpression
     PreDecrementExpression
-    '+'  UnaryExpression
-    '-'  UnaryExpression
+    ( '+'  |  '-' )  UnaryExpression
     UnaryExpressionNotPlusMinus
 
 PreIncrementExpression:
@@ -575,8 +574,7 @@ PreDecrementExpression:
 
 UnaryExpressionNotPlusMinus:
     PostfixExpression
-    '~'  UnaryExpression
-    '!'  UnaryExpression
+    ( '~'  |  '!' )  UnaryExpression
     CastExpression
 
 CastExpression:
@@ -585,33 +583,24 @@ CastExpression:
 
 MultiplicativeExpression:
     UnaryExpression
-    MultiplicativeExpression  '*'  UnaryExpression
-    MultiplicativeExpression  '/'  UnaryExpression
-    MultiplicativeExpression  '%'  UnaryExpression
+    MultiplicativeExpression  ( '*'  |  '/'  |  '%' )  UnaryExpression
 
 AdditiveExpression:
     MultiplicativeExpression
-    AdditiveExpression  '+'  MultiplicativeExpression
-    AdditiveExpression  '-'  MultiplicativeExpression
+    AdditiveExpression  ( '+'  |  '-' )  MultiplicativeExpression
 
 ShiftExpression:
     AdditiveExpression
-    ShiftExpression  '<<'  AdditiveExpression
-    ShiftExpression  '>>'  AdditiveExpression
-    ShiftExpression  '>>>'  AdditiveExpression
+    ShiftExpression  ( '<<'  |  '>>'  |  '>>>' ) AdditiveExpression
 
 RelationalExpression:
     ShiftExpression
-    RelationalExpression  '<'  ShiftExpression
-    RelationalExpression  '>'  ShiftExpression
-    RelationalExpression  '<='  ShiftExpression
-    RelationalExpression  '>='  ShiftExpression
+    RelationalExpression  ( '<'  |  '>'  |  '<='  |  '>=' )  ShiftExpression
     RelationalExpression  'instanceof'  ReferenceType
 
 EqualityExpression:
     RelationalExpression
-    EqualityExpression  '=='  RelationalExpression
-    EqualityExpression  '!='  RelationalExpression
+    EqualityExpression  ( '=='  |  '!=' )  RelationalExpression
 
 AndExpression:
     EqualityExpression
