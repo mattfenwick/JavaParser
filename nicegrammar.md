@@ -26,10 +26,10 @@ ClassOrInterfaceType:
     InterfaceType
 
 ClassType:
-    TypeDeclSpecifier TypeArgumentsopt
+    TypeDeclSpecifier TypeArguments(?)
 
 InterfaceType:
-    TypeDeclSpecifier TypeArgumentsopt
+    TypeDeclSpecifier TypeArguments(?)
 
 TypeDeclSpecifier:
     TypeName  
@@ -46,11 +46,11 @@ ArrayType:
     Type [ ]
     
 TypeParameter:
-    TypeVariable TypeBoundopt
+    TypeVariable TypeBound(?)
 
 TypeBound:
     extends TypeVariable
-    extends ClassOrInterfaceType AdditionalBoundListopt
+    extends ClassOrInterfaceType AdditionalBoundList(?)
 
 AdditionalBoundList:
     AdditionalBound AdditionalBoundList
@@ -71,7 +71,7 @@ TypeArgument:
     Wildcard
 
 Wildcard:
-    ? WildcardBoundsopt
+    ? WildcardBounds(?)
 
 WildcardBounds:
     extends ReferenceType
@@ -104,7 +104,7 @@ AmbiguousName:
 
 
 CompilationUnit:
-    PackageDeclarationopt ImportDeclarationsopt TypeDeclarationsopt
+    PackageDeclaration(?) ImportDeclarations(?) TypeDeclarations(?)
 
 ImportDeclarations:
     ImportDeclaration
@@ -115,7 +115,7 @@ TypeDeclarations:
     TypeDeclarations TypeDeclaration
 
 PackageDeclaration:
-    Annotationsopt package PackageName ;
+    Annotations(?) package PackageName ;
 
 ImportDeclaration:
     SingleTypeImportDeclaration
@@ -146,8 +146,8 @@ ClassDeclaration:
     EnumDeclaration
 
 NormalClassDeclaration:
-    ClassModifiersopt class Identifier TypeParametersopt
-                                               Superopt Interfacesopt ClassBody
+    ClassModifiers(?) class Identifier TypeParameters(?)
+                                               Super(?) Interfaces(?) ClassBody
 
 ClassModifiers:
     ClassModifier
@@ -175,7 +175,7 @@ InterfaceTypeList:
     InterfaceTypeList , InterfaceType
 
 ClassBody:
-    { ClassBodyDeclarationsopt }
+    { ClassBodyDeclarations(?) }
 
 ClassBodyDeclarations:
     ClassBodyDeclaration
@@ -195,7 +195,7 @@ ClassMemberDeclaration:
     ;
 
 FieldDeclaration:
-    FieldModifiersopt Type VariableDeclarators ;
+    FieldModifiers(?) Type VariableDeclarators ;
 
 VariableDeclarators:
     VariableDeclarator
@@ -225,10 +225,10 @@ MethodDeclaration:
     MethodHeader MethodBody
 
 MethodHeader:
-    MethodModifiersopt TypeParametersopt Result MethodDeclarator Throwsopt
+    MethodModifiers(?) TypeParameters(?) Result MethodDeclarator Throws(?)
 
 MethodDeclarator:
-    Identifier ( FormalParameterListopt )
+    Identifier ( FormalParameterList(?) )
 
 MethodDeclarator:
     MethodDeclarator [ ]
@@ -242,7 +242,7 @@ FormalParameters:
     FormalParameters , FormalParameter
 
 FormalParameter:
-    VariableModifiersopt Type VariableDeclaratorId
+    VariableModifiers(?) Type VariableDeclaratorId
 
 VariableModifiers:
     VariableModifier
@@ -252,7 +252,7 @@ VariableModifier: one of
     Annotation final
 
 LastFormalParameter:
-    VariableModifiersopt Type... VariableDeclaratorId
+    VariableModifiers(?) Type... VariableDeclaratorId
     FormalParameter
 
 MethodModifiers:
@@ -289,11 +289,11 @@ StaticInitializer:
     static Block
 
 ConstructorDeclaration:
-    ConstructorModifiersopt ConstructorDeclarator
-                                Throwsopt ConstructorBody
+    ConstructorModifiers(?) ConstructorDeclarator
+                                Throws(?) ConstructorBody
 
 ConstructorDeclarator:
-    TypeParametersopt SimpleTypeName ( FormalParameterListopt )
+    TypeParameters(?) SimpleTypeName ( FormalParameterList(?) )
 
 ConstructorModifiers:
     ConstructorModifier
@@ -303,12 +303,12 @@ ConstructorModifier: one of
     Annotation public protected private
 
 ConstructorBody:
-    { ExplicitConstructorInvocationopt BlockStatementsopt }
+    { ExplicitConstructorInvocation(?) BlockStatements(?) }
 
 ExplicitConstructorInvocation:
-    NonWildTypeArgumentsopt this ( ArgumentListopt ) ;
-    NonWildTypeArgumentsopt super ( ArgumentListopt ) ;
-    Primary . NonWildTypeArgumentsopt super ( ArgumentListopt ) ;
+    NonWildTypeArguments(?) this ( ArgumentList(?) ) ;
+    NonWildTypeArguments(?) super ( ArgumentList(?) ) ;
+    Primary . NonWildTypeArguments(?) super ( ArgumentList(?) ) ;
 
 NonWildTypeArguments:
     < ReferenceTypeList >
@@ -318,23 +318,23 @@ ReferenceTypeList:
     ReferenceTypeList , ReferenceType
 
 EnumDeclaration:
-    ClassModifiersopt enum Identifier Interfacesopt EnumBody
+    ClassModifiers(?) enum Identifier Interfaces(?) EnumBody
 
 EnumBody:
-    { EnumConstantsopt ,opt EnumBodyDeclarationsopt }
+    { EnumConstants(?) ,(?) EnumBodyDeclarations(?) }
 
 EnumConstants:
     EnumConstant
     EnumConstants , EnumConstant
 
 EnumConstant:
-    Annotationsopt Identifier Argumentsopt ClassBodyopt
+    Annotations(?) Identifier Arguments(?) ClassBody(?)
 
 Arguments:
-    ( ArgumentListopt )
+    ( ArgumentList(?) )
 
 EnumBodyDeclarations:
-    ; ClassBodyDeclarationsopt
+    ; ClassBodyDeclarations(?)
 
 
 InterfaceDeclaration:
@@ -342,8 +342,8 @@ InterfaceDeclaration:
     AnnotationTypeDeclaration
 
 NormalInterfaceDeclaration:
-    InterfaceModifiersopt interface Identifier
-    TypeParametersopt ExtendsInterfacesopt InterfaceBody
+    InterfaceModifiers(?) interface Identifier
+    TypeParameters(?) ExtendsInterfaces(?) InterfaceBody
 
 InterfaceModifiers:
     InterfaceModifier
@@ -357,7 +357,7 @@ ExtendsInterfaces:
     extends InterfaceTypeList
 
 InterfaceBody:
-    { InterfaceMemberDeclarationsopt }
+    { InterfaceMemberDeclarations(?) }
 
 InterfaceMemberDeclarations:
     InterfaceMemberDeclaration
@@ -371,7 +371,7 @@ InterfaceMemberDeclaration:
     ;   
 
 ConstantDeclaration:
-    ConstantModifiersopt Type VariableDeclarators ;
+    ConstantModifiers(?) Type VariableDeclarators ;
 
 ConstantModifiers: 
     ConstantModifier
@@ -381,8 +381,8 @@ ConstantModifier: one of
     Annotation public static final
 
 AbstractMethodDeclaration:
-    AbstractMethodModifiersopt TypeParametersopt Result
-                                           MethodDeclarator Throwsopt ;
+    AbstractMethodModifiers(?) TypeParameters(?) Result
+                                           MethodDeclarator Throws(?) ;
 
 AbstractMethodModifiers:
     AbstractMethodModifier
@@ -392,17 +392,17 @@ AbstractMethodModifier: one of
     Annotation public abstract
 
 AnnotationTypeDeclaration:
-    InterfaceModifiersopt @ interface Identifier AnnotationTypeBody
+    InterfaceModifiers(?) @ interface Identifier AnnotationTypeBody
 
 AnnotationTypeBody:
-    { AnnotationTypeElementDeclarationsopt }
+    { AnnotationTypeElementDeclarations(?) }
 
 AnnotationTypeElementDeclarations:
     AnnotationTypeElementDeclaration
     AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration
 
 AnnotationTypeElementDeclaration:
-    AbstractMethodModifiersopt Type Identifier ( ) Dimsopt DefaultValueopt ;
+    AbstractMethodModifiers(?) Type Identifier ( ) Dims(?) DefaultValue(?) ;
     ConstantDeclaration
     ClassDeclaration
     InterfaceDeclaration
@@ -423,7 +423,7 @@ Annotation:
     SingleElementAnnotation
 
 NormalAnnotation:
-    @ TypeName ( ElementValuePairsopt )
+    @ TypeName ( ElementValuePairs(?) )
 
 ElementValuePairs:
     ElementValuePair
@@ -438,7 +438,7 @@ ElementValue:
     ElementValueArrayInitializer
 
 ElementValueArrayInitializer:
-    { ElementValuesopt ,opt }
+    { ElementValues(?) ,(?) }
 
 ElementValues:
     ElementValue
@@ -452,7 +452,7 @@ SingleElementAnnotation:
 
 
 ArrayInitializer:
-    { VariableInitializersopt ,opt }
+    { VariableInitializers(?) ,(?) }
 
 VariableInitializers:
     VariableInitializer
@@ -460,7 +460,7 @@ VariableInitializers:
 
 
 Block:
-    { BlockStatementsopt }
+    { BlockStatements(?) }
 
 BlockStatements:
     BlockStatement
@@ -475,7 +475,7 @@ LocalVariableDeclarationStatement:
     LocalVariableDeclaration ;
 
 LocalVariableDeclaration:
-    VariableModifiersopt Type VariableDeclarators
+    VariableModifiers(?) Type VariableDeclarators
 
 Statement:
     StatementWithoutTrailingSubstatement
@@ -544,7 +544,7 @@ SwitchStatement:
     switch ( Expression ) SwitchBlock
 
 SwitchBlock:
-    { SwitchBlockStatementGroupsopt SwitchLabelsopt }
+    { SwitchBlockStatementGroups(?) SwitchLabels(?) }
 
 SwitchBlockStatementGroups:
     SwitchBlockStatementGroup
@@ -579,10 +579,10 @@ ForStatement:
     EnhancedForStatement
 
 BasicForStatement:
-    for ( ForInitopt ; Expressionopt ; ForUpdateopt ) Statement
+    for ( ForInit(?) ; Expression(?) ; ForUpdate(?) ) Statement
 
 ForStatementNoShortIf:
-    for ( ForInitopt ; Expressionopt ; ForUpdateopt ) StatementNoShortIf
+    for ( ForInit(?) ; Expression(?) ; ForUpdate(?) ) StatementNoShortIf
 
 ForInit:
     StatementExpressionList
@@ -599,13 +599,13 @@ EnhancedForStatement:
     for ( FormalParameter : Expression ) Statement
 
 BreakStatement:
-    break Identifieropt ;
+    break Identifier(?) ;
 
 ContinueStatement:
-    continue Identifieropt ;
+    continue Identifier(?) ;
 
 ReturnStatement:
-    return Expressionopt ;
+    return Expression(?) ;
 
 ThrowStatement:
     throw Expression ;
@@ -615,7 +615,7 @@ SynchronizedStatement:
 
 TryStatement:
     try Block Catches
-    try Block Catchesopt Finally
+    try Block Catches(?) Finally
     TryWithResourcesStatement
 
 Catches:
@@ -626,7 +626,7 @@ CatchClause:
     catch ( CatchFormalParameter ) Block
 
 CatchFormalParameter:
-    VariableModifiersopt CatchType VariableDeclaratorId
+    VariableModifiers(?) CatchType VariableDeclaratorId
 
 CatchType:
     ClassType
@@ -636,17 +636,17 @@ Finally:
     finally Block
 
 TryWithResourcesStatement:
-    try ResourceSpecification Block Catchesopt Finallyopt
+    try ResourceSpecification Block Catches(?) Finally(?)
 
 ResourceSpecification:
-    ( Resources ;opt )
+    ( Resources ;(?) )
 
 Resources:
     Resource
     Resource ; Resources
 
 Resource:
-    VariableModifiersopt Type VariableDeclaratorId = Expression
+    VariableModifiers(?) Type VariableDeclaratorId = Expression
 
 
 Primary:
@@ -674,10 +674,10 @@ Literal:
     NullLiteral
 
 ClassInstanceCreationExpression:
-    new TypeArgumentsopt TypeDeclSpecifier TypeArgumentsOrDiamondopt
-                                                            ( ArgumentListopt ) ClassBodyopt
-    Primary . new TypeArgumentsopt Identifier TypeArgumentsOrDiamondopt
-                                                            ( ArgumentListopt ) ClassBodyopt
+    new TypeArguments(?) TypeDeclSpecifier TypeArgumentsOrDiamond(?)
+                                                            ( ArgumentList(?) ) ClassBody(?)
+    Primary . new TypeArguments(?) Identifier TypeArgumentsOrDiamond(?)
+                                                            ( ArgumentList(?) ) ClassBody(?)
 
 TypeArgumentsOrDiamond:
     TypeArguments
@@ -688,8 +688,8 @@ ArgumentList:
     ArgumentList , Expression
 
 ArrayCreationExpression:
-    new PrimitiveType DimExprs Dimsopt
-    new ClassOrInterfaceType DimExprs Dimsopt
+    new PrimitiveType DimExprs Dims(?)
+    new ClassOrInterfaceType DimExprs Dims(?)
     new PrimitiveType Dims ArrayInitializer 
     new ClassOrInterfaceType Dims ArrayInitializer
 
@@ -710,11 +710,11 @@ FieldAccess:
     ClassName . super . Identifier
 
 MethodInvocation:
-    MethodName ( ArgumentListopt )
-    Primary . NonWildTypeArgumentsopt Identifier ( ArgumentListopt )
-    super . NonWildTypeArgumentsopt Identifier ( ArgumentListopt )
-    ClassName . super . NonWildTypeArgumentsopt Identifier ( ArgumentListopt )
-    TypeName . NonWildTypeArguments Identifier ( ArgumentListopt )
+    MethodName ( ArgumentList(?) )
+    Primary . NonWildTypeArguments(?) Identifier ( ArgumentList(?) )
+    super . NonWildTypeArguments(?) Identifier ( ArgumentList(?) )
+    ClassName . super . NonWildTypeArguments(?) Identifier ( ArgumentList(?) )
+    TypeName . NonWildTypeArguments Identifier ( ArgumentList(?) )
 
 ArrayAccess:
     ExpressionName [ Expression ]
