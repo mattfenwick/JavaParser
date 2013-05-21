@@ -2,8 +2,8 @@ Type:
     PrimitiveType
     ReferenceType
     
-PrimitiveType: one of
-    byte short int long char float double boolean
+PrimitiveType:
+    'byte'  |  'short'  |  'int'  |  'long'  |  'char'  |  'float'  |  'double'  |  'boolean'
 
 ReferenceType:
     ClassOrInterfaceType
@@ -93,9 +93,9 @@ ClassDeclaration:
 NormalClassDeclaration:
     ClassModifiers(*)  'class'  Identifier  TypeParameters(?)  Super(?)  Interfaces(?)  ClassBody
 
-ClassModifier: one of
-    Annotation  'public'  'protected'  'private
-    'abstract'  'static'  'final'  'strictfp
+ClassModifier:
+    Annotation  |  'public'  |  'protected'  |  'private
+    'abstract'  |  'static'  |  'final'      |  'strictfp
 
 TypeParameters:
     '<'  sepBy1(TypeParameter, ',')  '>'
@@ -143,9 +143,9 @@ VariableInitializer:
     Expression
     ArrayInitializer
 
-FieldModifier: one of
-    Annotation  'public'  'protected'  'private'
-    'static'  'final'  'transient'  'volatile'
+FieldModifier:
+    Annotation  |  'public'  |  'protected'  |  'private'
+    'static'    |  'final'   |  'transient'  |  'volatile'
 
 MethodDeclaration:
     MethodHeader  MethodBody
@@ -164,19 +164,19 @@ FormalParameterList:
 FormalParameter:
     VariableModifier(*)  Type  VariableDeclaratorId
 
-VariableModifier: one of
-    Annotation  'final'
+VariableModifier:
+    Annotation  |  'final'
 
 LastFormalParameter:
     VariableModifier(*)  Type  '...'  VariableDeclaratorId
     FormalParameter
 
-MethodModifier: one of
-    Annotation  'public'  'protected'  'private'  'abstract'
-    'static'  'final'  'synchronized'  'native'  'strictfp'
+MethodModifier:
+    Annotation  |  'public'  |  'protected'     |  'private'  |  'abstract'
+    'static'    |  'final'   |  'synchronized'  |  'native'   |  'strictfp'
 
 Result:
-    Tpype
+    Type
     'void'
 
 Throws:
@@ -202,8 +202,8 @@ ConstructorDeclaration:
 ConstructorDeclarator:
     TypeParameters(?)  SimpleTypeName  '('  FormalParameterList(?)  ')'
 
-ConstructorModifier: one of
-    Annotation  'public'  'protected'  'private'
+ConstructorModifier:
+    Annotation  |  'public'  |  'protected'  |  'private'
 
 ConstructorBody:
     '{'  ExplicitConstructorInvocation(?)  BlockStatement(*)  '}'
@@ -240,9 +240,9 @@ NormalInterfaceDeclaration:
     InterfaceModifier(*)  'interface'  Identifier
     TypeParameters(?)  ExtendsInterfaces(?) p InterfaceBody
 
-InterfaceModifier: one of
-    Annotation  'public'  'protected'  'private'
-    'abstract'  'static'  'strictfp'
+InterfaceModifier:
+    Annotation  |  'public'  |  'protected'  |  'private'
+    'abstract'  |  'static'  |  'strictfp'
 
 ExtendsInterfaces:
     'extends'  InterfaceTypeList
@@ -260,14 +260,14 @@ InterfaceMemberDeclaration:
 ConstantDeclaration:
     ConstantModifier(*)  Type  VariableDeclarators  ';'
 
-ConstantModifier: one of
-    Annotation  'public'  'static'  'final'
+ConstantModifier:
+    Annotation  |  'public'  |  'static'  |  'final'
 
 AbstractMethodDeclaration:
     AbstractMethodModifier(*)  TypeParameters(?)  Result  MethodDeclarator  Throws(?)  ';'
 
-AbstractMethodModifier: one of
-    Annotation  'public'  'abstract'
+AbstractMethodModifier:
+    Annotation  |  'public'  |  'abstract'
 
 AnnotationTypeDeclaration:
     InterfaceModifier(*)  '@'  'interface'  Identifier  AnnotationTypeBody
@@ -407,16 +407,7 @@ AssertStatement:
     'assert'  Expression1  ':'  Expression2  ';'
 
 SwitchStatement:
-    switch  '('  Expression  ')'  SwitchBlock
-
-SwitchBlock:
-    '{'  SwitchBlockStatementGroups(?)  SwitchLabel(*)  '}'
-
-SwitchBlockStatementGroups:
-    SwitchBlockStatementGroup(+)
-
-SwitchBlockStatementGroup:
-    SwitchLabel(+)  BlockStatement(+)
+    'switch'  '('  Expression  ')'  '{'  ( SwitchLabel(+)  BlockStatement(+) )(*)  SwitchLabel(*)  '}'
 
 SwitchLabel:
     'case'  ConstantExpression  ':'
@@ -476,10 +467,7 @@ TryStatement:
     TryWithResourcesStatement
 
 CatchClause:
-    'catch'  '('  CatchFormalParameter  ')'  Block
-
-CatchFormalParameter:
-    VariableModifier(*)  CatchType  VariableDeclaratorId
+    'catch'  '('  VariableModifier(*)  CatchType  VariableDeclaratorId  ')'  Block
 
 CatchType:
     sepBy1(ClassType, '|')
@@ -492,9 +480,6 @@ TryWithResourcesStatement:
 
 ResourceSpecification:
     '('  sepBy1(Resource, ';')  ';'(?)  ')'
-
-Resources:
-    sepBy1(Resource, ';')
 
 Resource:
     VariableModifier(*)  Type  VariableDeclaratorId  '='  Expression
@@ -570,87 +555,87 @@ PostfixExpression:
     PostDecrementExpression
 
 PostIncrementExpression:
-    PostfixExpression ++
+    PostfixExpression  '++'
 
 PostDecrementExpression:
-    PostfixExpression --
+    PostfixExpression  '--'
 
 UnaryExpression:
     PreIncrementExpression
     PreDecrementExpression
-    + UnaryExpression
-    - UnaryExpression
+    '+'  UnaryExpression
+    '-'  UnaryExpression
     UnaryExpressionNotPlusMinus
 
 PreIncrementExpression:
-    ++ UnaryExpression
+    '++'  UnaryExpression
 
 PreDecrementExpression:
-    -- UnaryExpression
+    '--'  UnaryExpression
 
 UnaryExpressionNotPlusMinus:
     PostfixExpression
-    ~ UnaryExpression
-    ! UnaryExpression
+    '~'  UnaryExpression
+    '!'  UnaryExpression
     CastExpression
 
 CastExpression:
-    ( PrimitiveType ) UnaryExpression
-    ( ReferenceType ) UnaryExpressionNotPlusMinus
+    '('  PrimitiveType  ')'  UnaryExpression
+    '('  ReferenceType  ')'  UnaryExpressionNotPlusMinus
 
 MultiplicativeExpression:
     UnaryExpression
-    MultiplicativeExpression * UnaryExpression
-    MultiplicativeExpression / UnaryExpression
-    MultiplicativeExpression % UnaryExpression
+    MultiplicativeExpression  '*'  UnaryExpression
+    MultiplicativeExpression  '/'  UnaryExpression
+    MultiplicativeExpression  '%'  UnaryExpression
 
 AdditiveExpression:
     MultiplicativeExpression
-    AdditiveExpression + MultiplicativeExpression
-    AdditiveExpression - MultiplicativeExpression
+    AdditiveExpression  '+'  MultiplicativeExpression
+    AdditiveExpression  '-'  MultiplicativeExpression
 
 ShiftExpression:
     AdditiveExpression
-    ShiftExpression << AdditiveExpression
-    ShiftExpression >> AdditiveExpression
-    ShiftExpression >>> AdditiveExpression
+    ShiftExpression  '<<'  AdditiveExpression
+    ShiftExpression  '>>'  AdditiveExpression
+    ShiftExpression  '>>>'  AdditiveExpression
 
 RelationalExpression:
     ShiftExpression
-    RelationalExpression < ShiftExpression
-    RelationalExpression > ShiftExpression
-    RelationalExpression <= ShiftExpression
-    RelationalExpression >= ShiftExpression
-    RelationalExpression instanceof ReferenceType
+    RelationalExpression  '<'  ShiftExpression
+    RelationalExpression  '>'  ShiftExpression
+    RelationalExpression  '<='  ShiftExpression
+    RelationalExpression  '>='  ShiftExpression
+    RelationalExpression  'instanceof'  ReferenceType
 
 EqualityExpression:
     RelationalExpression
-    EqualityExpression == RelationalExpression
-    EqualityExpression != RelationalExpression
+    EqualityExpression  '=='  RelationalExpression
+    EqualityExpression  '!='  RelationalExpression
 
 AndExpression:
     EqualityExpression
-    AndExpression & EqualityExpression
+    AndExpression  '&'  EqualityExpression
 
 ExclusiveOrExpression:
     AndExpression
-    ExclusiveOrExpression ^ AndExpression
+    ExclusiveOrExpression  '^'  AndExpression
 
 InclusiveOrExpression:
     ExclusiveOrExpression
-    InclusiveOrExpression | ExclusiveOrExpression
+    InclusiveOrExpression  '|'  ExclusiveOrExpression
 
 ConditionalAndExpression:
     InclusiveOrExpression
-    ConditionalAndExpression && InclusiveOrExpression
+    ConditionalAndExpression  '&&'  InclusiveOrExpression
 
 ConditionalOrExpression:
     ConditionalAndExpression
-    ConditionalOrExpression || ConditionalAndExpression
+    ConditionalOrExpression  '||'  ConditionalAndExpression
 
 ConditionalExpression:
     ConditionalOrExpression
-    ConditionalOrExpression ? Expression : ConditionalExpression
+    ConditionalOrExpression  '?'  Expression  ':'  ConditionalExpression
 
 AssignmentExpression:
     ConditionalExpression
@@ -664,8 +649,10 @@ LeftHandSide:
     FieldAccess
     ArrayAccess
 
-AssignmentOperator: one of
-    = *= /= %= += -= <<= >>= >>>= &= ^= |=
+AssignmentOperator:
+    '='   |  '*='   |  '/='   |  '%='    |  '+='  |
+    '-='  |  '<<='  |  '>>='  |  '>>>='  |  '&='  |
+    '^='  |  '|='
 
 Expression:
     AssignmentExpression
