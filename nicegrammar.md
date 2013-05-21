@@ -60,7 +60,7 @@ CompilationUnit:
     PackageDeclaration(?)  ImportDeclaration(*)  TypeDeclarations(*)
 
 PackageDeclaration:
-    Annotations(?)  'package'  PackageName  ';'
+    Annotation(*)  'package'  PackageName  ';'
 
 ImportDeclaration:
     SingleTypeImportDeclaration
@@ -110,10 +110,7 @@ InterfaceTypeList:
     sepBy1(InterfaceType, ',')
 
 ClassBody:
-    '{'  ClassBodyDeclarations(?)  '}'
-
-ClassBodyDeclarations:
-    ClassBodyDeclaration(+)
+    '{'  ClassBodyDeclaration(*)  '}'
 
 ClassBodyDeclaration:
     ClassMemberDeclaration
@@ -154,33 +151,25 @@ MethodDeclaration:
     MethodHeader  MethodBody
 
 MethodHeader:
-    MethodModifiers(?)  TypeParameters(?)  Result  MethodDeclarator  Throws(?)
+    MethodModifier(*)  TypeParameters(?)  Result  MethodDeclarator  Throws(?)
 
 MethodDeclarator:
     Identifier  '('  FormalParameterList(?)  ')'
-
-MethodDeclarator:
-    MethodDeclarator  '['  ']'
+    MethodDeclarator  '['  ']'         <-- spec says this is obsolete and don't use it!!!!  instead use the first alternative
 
 FormalParameterList:
     LastFormalParameter
     sepBy1(FormalParameter, ',')  ','  LastFormalParameter
 
 FormalParameter:
-    VariableModifiers(?)  Type  VariableDeclaratorId
-
-VariableModifiers:
-    VariableModifier(+)
+    VariableModifier(*)  Type  VariableDeclaratorId
 
 VariableModifier: one of
     Annotation  'final'
 
 LastFormalParameter:
-    VariableModifiers(?)  Type  '...'  VariableDeclaratorId
+    VariableModifier(*)  Type  '...'  VariableDeclaratorId
     FormalParameter
-
-MethodModifiers:
-    MethodModifier(+)
 
 MethodModifier: one of
     Annotation  'public'  'protected'  'private'  'abstract'
@@ -191,10 +180,7 @@ Result:
     'void'
 
 Throws:
-    'throws'  ExceptionTypeList
-
-ExceptionTypeList:
-    sepBy1(ExceptionType, ',')
+    'throws'  sepBy1(ExceptionType, ',')
 
 ExceptionType:
     TypeName 
@@ -211,19 +197,16 @@ StaticInitializer:
     'static'  Block
 
 ConstructorDeclaration:
-    ConstructorModifiers(?)  ConstructorDeclarator  Throws(?)  ConstructorBody
+    ConstructorModifier(*)  ConstructorDeclarator  Throws(?)  ConstructorBody
 
 ConstructorDeclarator:
     TypeParameters(?)  SimpleTypeName  '('  FormalParameterList(?)  ')'
-
-ConstructorModifiers:
-    ConstructorModifier(+)
 
 ConstructorModifier: one of
     Annotation  'public'  'protected'  'private'
 
 ConstructorBody:
-    '{'  ExplicitConstructorInvocation(?)  BlockStatements(?)  '}'
+    '{'  ExplicitConstructorInvocation(?)  BlockStatement(*)  '}'
 
 ExplicitConstructorInvocation:
     NonWildTypeArguments(?)  'this'  '('  ArgumentList(?)  ')'  ';'
@@ -231,28 +214,22 @@ ExplicitConstructorInvocation:
     Primary  '.'  NonWildTypeArguments(?)  'super'  '('  ArgumentList(?)  ')'  ';'
 
 NonWildTypeArguments:
-    '<'  ReferenceTypeList  '>'
-
-ReferenceTypeList: 
-    sepBy1(ReferenceType, ',')
+    '<'  sepBy1(ReferenceType, ',')  '>'
 
 EnumDeclaration:
     ClassModifiers(?)  'enum'  Identifier  Interfaces(?)  EnumBody
 
 EnumBody:
-    '{'  EnumConstants(?)  ','(?)  EnumBodyDeclarations(?)  '}'
-
-EnumConstants:
-    sepBy1(EnumConstant, ',')
+    '{'  sepBy0(EnumConstant, ',')  ','(?)  EnumBodyDeclarations(?)  '}'
 
 EnumConstant:
-    Annotations(?)  Identifier  Arguments(?)  ClassBody(?)
+    Annotation(*)  Identifier  Arguments(?)  ClassBody(?)
 
 Arguments:
     '('  ArgumentList(?)  ')'
 
 EnumBodyDeclarations:
-    ';'  ClassBodyDeclarations(?)
+    ';'  ClassBodyDeclaration(*)
 
 
 InterfaceDeclaration:
@@ -260,11 +237,8 @@ InterfaceDeclaration:
     AnnotationTypeDeclaration
 
 NormalInterfaceDeclaration:
-    InterfaceModifiers(?)  'interface'  Identifier
+    InterfaceModifier(*)  'interface'  Identifier
     TypeParameters(?)  ExtendsInterfaces(?) p InterfaceBody
-
-InterfaceModifiers:
-    InterfaceModifier(+)
 
 InterfaceModifier: one of
     Annotation  'public'  'protected'  'private'
@@ -274,10 +248,7 @@ ExtendsInterfaces:
     'extends'  InterfaceTypeList
 
 InterfaceBody:
-    '{'  InterfaceMemberDeclarations(?)  '}'
-
-InterfaceMemberDeclarations:
-    InterfaceMemberDeclaration(+)
+    '{'  InterfaceMemberDeclaration(*)  '}'
 
 InterfaceMemberDeclaration:
     ConstantDeclaration
@@ -287,25 +258,19 @@ InterfaceMemberDeclaration:
     ';'   
 
 ConstantDeclaration:
-    ConstantModifiers(?)  Type  VariableDeclarators  ';'
-
-ConstantModifiers: 
-    ConstantModifier(+)
+    ConstantModifier(*)  Type  VariableDeclarators  ';'
 
 ConstantModifier: one of
     Annotation  'public'  'static'  'final'
 
 AbstractMethodDeclaration:
-    AbstractMethodModifiers(?)  TypeParameters(?)  Result  MethodDeclarator  Throws(?)  ';'
-
-AbstractMethodModifiers:
-    AbstractMethodModifier(+)
+    AbstractMethodModifier(*)  TypeParameters(?)  Result  MethodDeclarator  Throws(?)  ';'
 
 AbstractMethodModifier: one of
     Annotation  'public'  'abstract'
 
 AnnotationTypeDeclaration:
-    InterfaceModifiers(?)  '@'  'interface'  Identifier  AnnotationTypeBody
+    InterfaceModifier(*)  '@'  'interface'  Identifier  AnnotationTypeBody
 
 AnnotationTypeBody:
     '{'  AnnotationTypeElementDeclarations(?)  '}'
@@ -314,7 +279,7 @@ AnnotationTypeElementDeclarations:
     AnnotationTypeElementDeclaration(+)
 
 AnnotationTypeElementDeclaration:
-    AbstractMethodModifiers(?)  Type  Identifier  '('  ')'  Dim(*)  DefaultValue(?)  ';'
+    AbstractMethodModifier(*)  Type  Identifier  '('  ')'  Dim(*)  DefaultValue(?)  ';'
     ConstantDeclaration
     ClassDeclaration
     InterfaceDeclaration
@@ -324,9 +289,6 @@ AnnotationTypeElementDeclaration:
 
 DefaultValue:
     'default'  ElementValue
-
-Annotations:
-    Annotation(+)
 
 Annotation:
     NormalAnnotation
@@ -368,10 +330,7 @@ VariableInitializers:
 
 
 Block:
-    '{'  BlockStatements(?)  '}'
-
-BlockStatements:
-    BlockStatement(+)
+    '{'  BlockStatement(*)  '}'
 
 BlockStatement:
     LocalVariableDeclarationStatement
@@ -382,7 +341,7 @@ LocalVariableDeclarationStatement:
     LocalVariableDeclaration  ';'
 
 LocalVariableDeclaration:
-    VariableModifiers(?)  Type  VariableDeclarators
+    VariableModifier(*)  Type  VariableDeclarators
 
 Statement:
     StatementWithoutTrailingSubstatement
@@ -451,16 +410,13 @@ SwitchStatement:
     switch  '('  Expression  ')'  SwitchBlock
 
 SwitchBlock:
-    '{'  SwitchBlockStatementGroups(?)  SwitchLabels(?)  '}'
+    '{'  SwitchBlockStatementGroups(?)  SwitchLabel(*)  '}'
 
 SwitchBlockStatementGroups:
     SwitchBlockStatementGroup(+)
 
 SwitchBlockStatementGroup:
-    SwitchLabels BlockStatements
-
-SwitchLabels:
-    SwitchLabel(+)
+    SwitchLabel(+)  BlockStatement(+)
 
 SwitchLabel:
     'case'  ConstantExpression  ':'
@@ -490,13 +446,10 @@ ForStatementNoShortIf:
     'for'  '('  ForInit(?)  ';'  Expression(?)  ';'  ForUpdate(?)  ')'  StatementNoShortIf
 
 ForInit:
-    StatementExpressionList
+    sepBy1(StatementExpression, ',')
     LocalVariableDeclaration
 
 ForUpdate:
-    StatementExpressionList
-
-StatementExpressionList:
     sepBy1(StatementExpression, ',')
 
 EnhancedForStatement:
@@ -518,18 +471,15 @@ SynchronizedStatement:
     'synchronized'  '('  Expression  ')'  Block
 
 TryStatement:
-    'try'  Block  Catches
-    'try'  Block  Catches(?)  Finally
+    'try'  Block  CatchClause(+)
+    'try'  Block  CatchClause(*)  Finally
     TryWithResourcesStatement
 
-Catches:
-    CatchClause(+)
-
 CatchClause:
-    catch  '('  CatchFormalParameter  ')'  Block
+    'catch'  '('  CatchFormalParameter  ')'  Block
 
 CatchFormalParameter:
-    VariableModifiers(?)  CatchType  VariableDeclaratorId
+    VariableModifier(*)  CatchType  VariableDeclaratorId
 
 CatchType:
     sepBy1(ClassType, '|')
@@ -538,7 +488,7 @@ Finally:
     'finally'  Block
 
 TryWithResourcesStatement:
-    'try'  ResourceSpecification  Block  Catches(?)  Finally(?)
+    'try'  ResourceSpecification  Block  CatchClause(*)  Finally(?)
 
 ResourceSpecification:
     '('  sepBy1(Resource, ';')  ';'(?)  ')'
@@ -547,7 +497,7 @@ Resources:
     sepBy1(Resource, ';')
 
 Resource:
-    VariableModifiers(?)  Type  VariableDeclaratorId  '='  Expression
+    VariableModifier(*)  Type  VariableDeclaratorId  '='  Expression
 
 
 Primary:
