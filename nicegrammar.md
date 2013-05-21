@@ -2,19 +2,8 @@ Type:
     PrimitiveType
     ReferenceType
     
-PrimitiveType:
-    NumericType
-    boolean
-
-NumericType:
-    IntegralType
-    FloatingPointType
-
-IntegralType: one of
-    byte short int long char
-
-FloatingPointType: one of
-    float double
+PrimitiveType: one of
+    byte short int long char float double boolean
 
 ReferenceType:
     ClassOrInterfaceType
@@ -35,84 +24,40 @@ TypeDeclSpecifier:
     TypeName  
     ClassOrInterfaceType . Identifier
 
-TypeName:
-    Identifier
-    TypeName . Identifier
-
 TypeVariable:
     Identifier
 
 ArrayType:
-    Type [ ]
+    Type  '['  ']'
     
 TypeParameter:
     TypeVariable TypeBound(?)
 
 TypeBound:
-    extends TypeVariable
-    extends ClassOrInterfaceType AdditionalBoundList(?)
-
-AdditionalBoundList:
-    AdditionalBound AdditionalBoundList
-    AdditionalBound
-
-AdditionalBound:
-    & InterfaceType
+    extends  TypeVariable
+    extends  ClassOrInterfaceType  ( '&'  InterfaceType )(*)
 
 TypeArguments:
-    < TypeArgumentList >
-
-TypeArgumentList: 
-    TypeArgument
-    TypeArgumentList , TypeArgument
+    '<'  sepBy1(TypeArgument, ',')  '>'
 
 TypeArgument:
     ReferenceType
-    Wildcard
-
-Wildcard:
-    ? WildcardBounds(?)
-
-WildcardBounds:
-    extends ReferenceType
-    super ReferenceType
+    '?'
+    '?'  extends ReferenceType
+    '?'  super ReferenceType
 
 
 PackageName:
-    Identifier
-    PackageName . Identifier
-
 TypeName:
-    Identifier
-    PackageOrTypeName . Identifier
-
 ExpressionName:
-    Identifier
-    AmbiguousName . Identifier
-
 MethodName:
-    Identifier
-    AmbiguousName . Identifier
-
 PackageOrTypeName:
-    Identifier
-    PackageOrTypeName . Identifier
-
 AmbiguousName:
-    Identifier
-    AmbiguousName . Identifier
+    sepBy1(Identifier, '.')
 
 
 CompilationUnit:
-    PackageDeclaration(?) ImportDeclarations(?) TypeDeclarations(?)
-
-ImportDeclarations:
-    ImportDeclaration
-    ImportDeclarations ImportDeclaration
-
-TypeDeclarations:
-    TypeDeclaration
-    TypeDeclarations TypeDeclaration
+    PackageDeclaration(?) ImportDeclaration(*) TypeDeclarations(*)
 
 PackageDeclaration:
     Annotations(?) package PackageName ;
@@ -146,23 +91,15 @@ ClassDeclaration:
     EnumDeclaration
 
 NormalClassDeclaration:
-    ClassModifiers(?) class Identifier TypeParameters(?)
+    ClassModifiers(*) class Identifier TypeParameters(?)
                                                Super(?) Interfaces(?) ClassBody
-
-ClassModifiers:
-    ClassModifier
-    ClassModifiers ClassModifier
 
 ClassModifier: one of
     Annotation public protected private
     abstract static final strictfp
 
 TypeParameters:
-    < TypeParameterList >
-
-TypeParameterList:
-    TypeParameterList , TypeParameter
-    TypeParameter
+    '<'  sepBy1(TypeParameter, ',')  '>'
 
 Super:
     extends ClassType
@@ -195,11 +132,10 @@ ClassMemberDeclaration:
     ;
 
 FieldDeclaration:
-    FieldModifiers(?) Type VariableDeclarators ;
+    FieldModifier(*) Type VariableDeclarators ;
 
 VariableDeclarators:
-    VariableDeclarator
-    VariableDeclarators , VariableDeclarator
+    sepBy1(VariableDeclarator, ',')
 
 VariableDeclarator:
     VariableDeclaratorId
@@ -212,10 +148,6 @@ VariableDeclaratorId:
 VariableInitializer:
     Expression
     ArrayInitializer
-
-FieldModifiers:
-    FieldModifier
-    FieldModifiers FieldModifier
 
 FieldModifier: one of
     Annotation public protected private
@@ -235,29 +167,23 @@ MethodDeclarator:
 
 FormalParameterList:
     LastFormalParameter
-    FormalParameters , LastFormalParameter
-
-FormalParameters:
-    FormalParameter
-    FormalParameters , FormalParameter
+    sepBy1(FormalParameter, ',')  ','  LastFormalParameter
 
 FormalParameter:
     VariableModifiers(?) Type VariableDeclaratorId
 
 VariableModifiers:
-    VariableModifier
-    VariableModifiers VariableModifier
+    VariableModifier(+)
 
 VariableModifier: one of
     Annotation final
 
 LastFormalParameter:
-    VariableModifiers(?) Type... VariableDeclaratorId
+    VariableModifiers(?)  Type  '...'  VariableDeclaratorId
     FormalParameter
 
 MethodModifiers:
-    MethodModifier
-    MethodModifiers MethodModifier
+    MethodModifier(+)
 
 MethodModifier: one of
     Annotation public protected private abstract
@@ -271,8 +197,7 @@ Throws:
     throws ExceptionTypeList
 
 ExceptionTypeList:
-    ExceptionType
-    ExceptionTypeList , ExceptionType
+    sepBy1(ExceptionType, ',')
 
 ExceptionType:
     TypeName 
@@ -296,8 +221,7 @@ ConstructorDeclarator:
     TypeParameters(?) SimpleTypeName ( FormalParameterList(?) )
 
 ConstructorModifiers:
-    ConstructorModifier
-    ConstructorModifiers ConstructorModifier
+    ConstructorModifier(+)
 
 ConstructorModifier: one of
     Annotation public protected private
