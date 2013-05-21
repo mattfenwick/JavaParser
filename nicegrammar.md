@@ -15,14 +15,14 @@ ClassOrInterfaceType:
     InterfaceType
 
 ClassType:
-    TypeDeclSpecifier TypeArguments(?)
+    TypeDeclSpecifier  TypeArguments(?)
 
 InterfaceType:
-    TypeDeclSpecifier TypeArguments(?)
+    TypeDeclSpecifier  TypeArguments(?)
 
 TypeDeclSpecifier:
     TypeName  
-    ClassOrInterfaceType . Identifier
+    ClassOrInterfaceType  '.'  Identifier
 
 TypeVariable:
     Identifier
@@ -31,11 +31,11 @@ ArrayType:
     Type  '['  ']'
     
 TypeParameter:
-    TypeVariable TypeBound(?)
+    TypeVariable  TypeBound(?)
 
 TypeBound:
-    extends  TypeVariable
-    extends  ClassOrInterfaceType  ( '&'  InterfaceType )(*)
+    'extends'  TypeVariable
+    'extends'  ClassOrInterfaceType  ( '&'  InterfaceType )(*)
 
 TypeArguments:
     '<'  sepBy1(TypeArgument, ',')  '>'
@@ -43,8 +43,8 @@ TypeArguments:
 TypeArgument:
     ReferenceType
     '?'
-    '?'  extends ReferenceType
-    '?'  super ReferenceType
+    '?'  'extends'  ReferenceType
+    '?'  'super'  ReferenceType
 
 
 PackageName:
@@ -57,10 +57,10 @@ AmbiguousName:
 
 
 CompilationUnit:
-    PackageDeclaration(?) ImportDeclaration(*) TypeDeclarations(*)
+    PackageDeclaration(?)  ImportDeclaration(*)  TypeDeclarations(*)
 
 PackageDeclaration:
-    Annotations(?) package PackageName ;
+    Annotations(?)  'package'  PackageName  ';'
 
 ImportDeclaration:
     SingleTypeImportDeclaration
@@ -69,21 +69,21 @@ ImportDeclaration:
     StaticImportOnDemandDeclaration
 
 SingleTypeImportDeclaration:
-    import TypeName ;
+    'import'  TypeName  ';'
 
 TypeImportOnDemandDeclaration:
-    import PackageOrTypeName . * ;
+    'import'  PackageOrTypeName  '.'  '*'  ';'
 
 SingleStaticImportDeclaration:
-    import static TypeName . Identifier ;
+    'import'  'static'  TypeName  '.'  Identifier  ';'
 
 StaticImportOnDemandDeclaration:
-    import static TypeName . * ;
+    'import'  'static'  TypeName  '.'  '*'  ';'
 
 TypeDeclaration:
     ClassDeclaration
     InterfaceDeclaration
-    ;
+    ';'
 
 
 ClassDeclaration:
@@ -91,32 +91,29 @@ ClassDeclaration:
     EnumDeclaration
 
 NormalClassDeclaration:
-    ClassModifiers(*) class Identifier TypeParameters(?)
-                                               Super(?) Interfaces(?) ClassBody
+    ClassModifiers(*)  'class'  Identifier  TypeParameters(?)  Super(?)  Interfaces(?)  ClassBody
 
 ClassModifier: one of
-    Annotation public protected private
-    abstract static final strictfp
+    Annotation  'public'  'protected'  'private
+    'abstract'  'static'  'final'  'strictfp
 
 TypeParameters:
     '<'  sepBy1(TypeParameter, ',')  '>'
 
 Super:
-    extends ClassType
+    'extends'  ClassType
 
 Interfaces:
-    implements InterfaceTypeList
+    'implements'  InterfaceTypeList
 
 InterfaceTypeList:
-    InterfaceType
-    InterfaceTypeList , InterfaceType
+    sepBy1(InterfaceType, ',')
 
 ClassBody:
-    { ClassBodyDeclarations(?) }
+    '{'  ClassBodyDeclarations(?)  '}'
 
 ClassBodyDeclarations:
-    ClassBodyDeclaration
-    ClassBodyDeclarations ClassBodyDeclaration
+    ClassBodyDeclaration(+)
 
 ClassBodyDeclaration:
     ClassMemberDeclaration
@@ -129,54 +126,54 @@ ClassMemberDeclaration:
     MethodDeclaration
     ClassDeclaration    
     InterfaceDeclaration
-    ;
+    ';'
 
 FieldDeclaration:
-    FieldModifier(*) Type VariableDeclarators ;
+    FieldModifier(*)  Type  VariableDeclarators  ';'
 
 VariableDeclarators:
     sepBy1(VariableDeclarator, ',')
 
 VariableDeclarator:
     VariableDeclaratorId
-    VariableDeclaratorId = VariableInitializer
+    VariableDeclaratorId  '='  VariableInitializer
 
 VariableDeclaratorId:
     Identifier
-    VariableDeclaratorId [ ]
+    VariableDeclaratorId  '['  ']'
 
 VariableInitializer:
     Expression
     ArrayInitializer
 
 FieldModifier: one of
-    Annotation public protected private
-    static final transient volatile
+    Annotation  'public'  'protected'  'private'
+    'static'  'final'  'transient'  'volatile'
 
 MethodDeclaration:
-    MethodHeader MethodBody
+    MethodHeader  MethodBody
 
 MethodHeader:
-    MethodModifiers(?) TypeParameters(?) Result MethodDeclarator Throws(?)
+    MethodModifiers(?)  TypeParameters(?)  Result  MethodDeclarator  Throws(?)
 
 MethodDeclarator:
-    Identifier ( FormalParameterList(?) )
+    Identifier  '('  FormalParameterList(?)  ')'
 
 MethodDeclarator:
-    MethodDeclarator [ ]
+    MethodDeclarator  '['  ']'
 
 FormalParameterList:
     LastFormalParameter
     sepBy1(FormalParameter, ',')  ','  LastFormalParameter
 
 FormalParameter:
-    VariableModifiers(?) Type VariableDeclaratorId
+    VariableModifiers(?)  Type  VariableDeclaratorId
 
 VariableModifiers:
     VariableModifier(+)
 
 VariableModifier: one of
-    Annotation final
+    Annotation  'final'
 
 LastFormalParameter:
     VariableModifiers(?)  Type  '...'  VariableDeclaratorId
@@ -186,15 +183,15 @@ MethodModifiers:
     MethodModifier(+)
 
 MethodModifier: one of
-    Annotation public protected private abstract
-    static final synchronized native strictfp
+    Annotation  'public'  'protected'  'private'  'abstract'
+    'static'  'final'  'synchronized'  'native'  'strictfp'
 
 Result:
-    Type
-    void
+    Tpype
+    'void'
 
 Throws:
-    throws ExceptionTypeList
+    'throws'  ExceptionTypeList
 
 ExceptionTypeList:
     sepBy1(ExceptionType, ',')
@@ -205,60 +202,57 @@ ExceptionType:
 
 MethodBody:
     Block 
-    ;
+    ';'
 
 InstanceInitializer:
     Block
     
 StaticInitializer:
-    static Block
+    'static'  Block
 
 ConstructorDeclaration:
-    ConstructorModifiers(?) ConstructorDeclarator
-                                Throws(?) ConstructorBody
+    ConstructorModifiers(?)  ConstructorDeclarator  Throws(?)  ConstructorBody
 
 ConstructorDeclarator:
-    TypeParameters(?) SimpleTypeName ( FormalParameterList(?) )
+    TypeParameters(?)  SimpleTypeName  '('  FormalParameterList(?)  ')'
 
 ConstructorModifiers:
     ConstructorModifier(+)
 
 ConstructorModifier: one of
-    Annotation public protected private
+    Annotation  'public'  'protected'  'private'
 
 ConstructorBody:
-    { ExplicitConstructorInvocation(?) BlockStatements(?) }
+    '{'  ExplicitConstructorInvocation(?)  BlockStatements(?)  '}'
 
 ExplicitConstructorInvocation:
-    NonWildTypeArguments(?) this ( ArgumentList(?) ) ;
-    NonWildTypeArguments(?) super ( ArgumentList(?) ) ;
-    Primary . NonWildTypeArguments(?) super ( ArgumentList(?) ) ;
+    NonWildTypeArguments(?)  'this'  '('  ArgumentList(?)  ')'  ';'
+    NonWildTypeArguments(?)  'super'  '('  ArgumentList(?)  ')'  ';'
+    Primary  '.'  NonWildTypeArguments(?)  'super'  '('  ArgumentList(?)  ')'  ';'
 
 NonWildTypeArguments:
-    < ReferenceTypeList >
+    '<'  ReferenceTypeList  '>'
 
 ReferenceTypeList: 
-    ReferenceType
-    ReferenceTypeList , ReferenceType
+    sepBy1(ReferenceType, ',')
 
 EnumDeclaration:
-    ClassModifiers(?) enum Identifier Interfaces(?) EnumBody
+    ClassModifiers(?)  'enum'  Identifier  Interfaces(?)  EnumBody
 
 EnumBody:
-    { EnumConstants(?) ,(?) EnumBodyDeclarations(?) }
+    '{'  EnumConstants(?)  ','(?)  EnumBodyDeclarations(?)  '}'
 
 EnumConstants:
-    EnumConstant
-    EnumConstants , EnumConstant
+    sepBy1(EnumConstant, ',')
 
 EnumConstant:
-    Annotations(?) Identifier Arguments(?) ClassBody(?)
+    Annotations(?)  Identifier  Arguments(?)  ClassBody(?)
 
 Arguments:
-    ( ArgumentList(?) )
+    '('  ArgumentList(?)  ')'
 
 EnumBodyDeclarations:
-    ; ClassBodyDeclarations(?)
+    ';'  ClassBodyDeclarations(?)
 
 
 InterfaceDeclaration:
@@ -266,80 +260,73 @@ InterfaceDeclaration:
     AnnotationTypeDeclaration
 
 NormalInterfaceDeclaration:
-    InterfaceModifiers(?) interface Identifier
-    TypeParameters(?) ExtendsInterfaces(?) InterfaceBody
+    InterfaceModifiers(?)  'interface'  Identifier
+    TypeParameters(?)  ExtendsInterfaces(?) p InterfaceBody
 
 InterfaceModifiers:
-    InterfaceModifier
-    InterfaceModifiers InterfaceModifier
+    InterfaceModifier(+)
 
 InterfaceModifier: one of
-    Annotation public protected private
-    abstract static strictfp
+    Annotation  'public'  'protected'  'private'
+    'abstract'  'static'  'strictfp'
 
 ExtendsInterfaces:
-    extends InterfaceTypeList
+    'extends'  InterfaceTypeList
 
 InterfaceBody:
-    { InterfaceMemberDeclarations(?) }
+    '{'  InterfaceMemberDeclarations(?)  '}'
 
 InterfaceMemberDeclarations:
-    InterfaceMemberDeclaration
-    InterfaceMemberDeclarations InterfaceMemberDeclaration
+    InterfaceMemberDeclaration(+)
 
 InterfaceMemberDeclaration:
     ConstantDeclaration
     AbstractMethodDeclaration
     ClassDeclaration 
     InterfaceDeclaration
-    ;   
+    ';'   
 
 ConstantDeclaration:
-    ConstantModifiers(?) Type VariableDeclarators ;
+    ConstantModifiers(?)  Type  VariableDeclarators  ';'
 
 ConstantModifiers: 
-    ConstantModifier
-    ConstantModifier ConstantModifers 
+    ConstantModifier(+)
 
 ConstantModifier: one of
-    Annotation public static final
+    Annotation  'public'  'static'  'final'
 
 AbstractMethodDeclaration:
-    AbstractMethodModifiers(?) TypeParameters(?) Result
-                                           MethodDeclarator Throws(?) ;
+    AbstractMethodModifiers(?)  TypeParameters(?)  Result  MethodDeclarator  Throws(?)  ';'
 
 AbstractMethodModifiers:
-    AbstractMethodModifier
-    AbstractMethodModifiers AbstractMethodModifier
+    AbstractMethodModifier(+)
 
 AbstractMethodModifier: one of
-    Annotation public abstract
+    Annotation  'public'  'abstract'
 
 AnnotationTypeDeclaration:
-    InterfaceModifiers(?) @ interface Identifier AnnotationTypeBody
+    InterfaceModifiers(?)  '@'  'interface'  Identifier  AnnotationTypeBody
 
 AnnotationTypeBody:
-    { AnnotationTypeElementDeclarations(?) }
+    '{'  AnnotationTypeElementDeclarations(?)  '}'
 
 AnnotationTypeElementDeclarations:
-    AnnotationTypeElementDeclaration
-    AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration
+    AnnotationTypeElementDeclaration(+)
 
 AnnotationTypeElementDeclaration:
-    AbstractMethodModifiers(?) Type Identifier ( ) Dims(?) DefaultValue(?) ;
+    AbstractMethodModifiers(?)  Type  Identifier  '('  ')'  Dims(?)  DefaultValue(?)  ';'
     ConstantDeclaration
     ClassDeclaration
     InterfaceDeclaration
     EnumDeclaration
     AnnotationTypeDeclaration
-    ;
+    ';'
 
 DefaultValue:
-    default ElementValue
+    'default'  ElementValue
 
 Annotations:
-    Annotation
-    Annotations Annotation
+    Annotation(+)
 
 Annotation:
     NormalAnnotation
@@ -347,14 +334,13 @@ Annotation:
     SingleElementAnnotation
 
 NormalAnnotation:
-    @ TypeName ( ElementValuePairs(?) )
+    '@'  TypeName  '('  ElementValuePairs(?)  ')'
 
 ElementValuePairs:
-    ElementValuePair
-    ElementValuePairs , ElementValuePair
+    sepBy1(ElementValuePair, ',')
 
 ElementValuePair:
-    Identifier = ElementValue
+    Identifier  '='  ElementValue
 
 ElementValue:
     ConditionalExpression
@@ -362,33 +348,30 @@ ElementValue:
     ElementValueArrayInitializer
 
 ElementValueArrayInitializer:
-    { ElementValues(?) ,(?) }
+    '{'  ElementValues(?)  ','(?)  '}'
 
 ElementValues:
-    ElementValue
-    ElementValues , ElementValue
+    sepBy1(ElementValue, ',')
 
 MarkerAnnotation:
-    @ Identifier
+    '@'  Identifier
 
 SingleElementAnnotation:
-    @ Identifier ( ElementValue )
+    '@'  Identifier  '('  ElementValue  ')'
 
 
 ArrayInitializer:
-    { VariableInitializers(?) ,(?) }
+    '{'  VariableInitializers(?)  ','(?)  '}'
 
 VariableInitializers:
-    VariableInitializer
-    VariableInitializers , VariableInitializer
+    sepBy1(VariableInitializer, ',')
 
 
 Block:
-    { BlockStatements(?) }
+    '{'  BlockStatements(?)  '}'
 
 BlockStatements:
-    BlockStatement
-    BlockStatements BlockStatement
+    BlockStatement(+)
 
 BlockStatement:
     LocalVariableDeclarationStatement
@@ -396,10 +379,10 @@ BlockStatement:
     Statement
 
 LocalVariableDeclarationStatement:
-    LocalVariableDeclaration ;
+    LocalVariableDeclaration  ';'
 
 LocalVariableDeclaration:
-    VariableModifiers(?) Type VariableDeclarators
+    VariableModifiers(?)  Type  VariableDeclarators
 
 Statement:
     StatementWithoutTrailingSubstatement
@@ -431,16 +414,16 @@ StatementNoShortIf:
     ForStatementNoShortIf
 
 EmptyStatement:
-    ;
+    ';'
 
 LabeledStatement:
-    Identifier : Statement
+    Identifier  ':'  Statement
 
 LabeledStatementNoShortIf:
-    Identifier : StatementNoShortIf
+    Identifier  ':'  StatementNoShortIf
 
 ExpressionStatement:
-    StatementExpression ;
+    StatementExpression  ';'
 
 StatementExpression:
     Assignment
@@ -452,61 +435,59 @@ StatementExpression:
     ClassInstanceCreationExpression
 
 IfThenStatement:
-    if ( Expression ) Statement
+    'if'  '('  Expression  ')'  Statement
 
 IfThenElseStatement:
-    if ( Expression ) StatementNoShortIf else Statement
+    'if'  '('  Expression  ')'  StatementNoShortIf  'else'  Statement
 
 IfThenElseStatementNoShortIf:
-    if ( Expression ) StatementNoShortIf else StatementNoShortIf
+    'if'  '('  Expression  ')'  StatementNoShortIf  'else'  StatementNoShortIf
 
 AssertStatement:
-    assert Expression1 ;
-    assert Expression1 : Expression2 ;
+    'assert'  Expression1  ';'
+    'assert'  Expression1  ':'  Expression2  ';'
 
 SwitchStatement:
-    switch ( Expression ) SwitchBlock
+    switch  '('  Expression  ')'  SwitchBlock
 
 SwitchBlock:
-    { SwitchBlockStatementGroups(?) SwitchLabels(?) }
+    '{'  SwitchBlockStatementGroups(?)  SwitchLabels(?)  '}'
 
 SwitchBlockStatementGroups:
-    SwitchBlockStatementGroup
-    SwitchBlockStatementGroups SwitchBlockStatementGroup
+    SwitchBlockStatementGroup(+)
 
 SwitchBlockStatementGroup:
     SwitchLabels BlockStatements
 
 SwitchLabels:
-    SwitchLabel
-    SwitchLabels SwitchLabel
+    SwitchLabel(+)
 
 SwitchLabel:
-    case ConstantExpression :
-    case EnumConstantName :
-    default :
+    'case'  ConstantExpression  ':'
+    'case'  EnumConstantName  ':'
+    'default'  ':'
 
 EnumConstantName:
     Identifier
 
 WhileStatement:
-    while ( Expression ) Statement
+    'while'  '('  Expression  ')'  Statement
 
 WhileStatementNoShortIf:
-    while ( Expression ) StatementNoShortIf
+    'while'  '('  Expression  ')'  StatementNoShortIf
 
 DoStatement:
-    do Statement while ( Expression ) ;
+    'do'  Statement  'while'  '('  Expression  ')'  ';'
 
 ForStatement:
     BasicForStatement
     EnhancedForStatement
 
 BasicForStatement:
-    for ( ForInit(?) ; Expression(?) ; ForUpdate(?) ) Statement
+    'for'  '('  ForInit(?)  ';'  Expression(?)  ';'  ForUpdate(?)  ')'  Statement
 
 ForStatementNoShortIf:
-    for ( ForInit(?) ; Expression(?) ; ForUpdate(?) ) StatementNoShortIf
+    'for'  '('  ForInit(?)  ';'  Expression(?)  ';'  ForUpdate(?)  ')'  StatementNoShortIf
 
 ForInit:
     StatementExpressionList
@@ -516,61 +497,57 @@ ForUpdate:
     StatementExpressionList
 
 StatementExpressionList:
-    StatementExpression
-    StatementExpressionList , StatementExpression
+    sepBy1(StatementExpression, ',')
 
 EnhancedForStatement:
-    for ( FormalParameter : Expression ) Statement
+    'for'  '('  FormalParameter  ':'  Expression  ')'  Statement
 
 BreakStatement:
-    break Identifier(?) ;
+    'break'  Identifier(?)  ';'
 
 ContinueStatement:
-    continue Identifier(?) ;
+    'continue'  Identifier(?)  ';'
 
 ReturnStatement:
-    return Expression(?) ;
+    'return'  Expression(?)  ';'
 
 ThrowStatement:
-    throw Expression ;
+    'throw'  Expression  ';'
 
 SynchronizedStatement:
-    synchronized ( Expression ) Block
+    'synchronized'  '('  Expression  ')'  Block
 
 TryStatement:
-    try Block Catches
-    try Block Catches(?) Finally
+    'try'  Block  Catches
+    'try'  Block  Catches(?)  Finally
     TryWithResourcesStatement
 
 Catches:
-    CatchClause
-    Catches CatchClause
+    CatchClause(+)
 
 CatchClause:
-    catch ( CatchFormalParameter ) Block
+    catch  '('  CatchFormalParameter  ')'  Block
 
 CatchFormalParameter:
-    VariableModifiers(?) CatchType VariableDeclaratorId
+    VariableModifiers(?)  CatchType  VariableDeclaratorId
 
 CatchType:
-    ClassType
-    ClassType | CatchType 
+    sepBy1(ClassType, '|')
 
 Finally:
-    finally Block
+    'finally'  Block
 
 TryWithResourcesStatement:
-    try ResourceSpecification Block Catches(?) Finally(?)
+    'try'  ResourceSpecification  Block  Catches(?)  Finally(?)
 
 ResourceSpecification:
-    ( Resources ;(?) )
+    '('  sepBy1(Resource, ';')  ';'(?)  ')'
 
 Resources:
-    Resource
-    Resource ; Resources
+    sepBy1(Resource, ';')
 
 Resource:
-    VariableModifiers(?) Type VariableDeclaratorId = Expression
+    VariableModifiers(?)  Type  VariableDeclaratorId  '='  Expression
 
 
 Primary:
@@ -579,11 +556,11 @@ Primary:
 
 PrimaryNoNewArray:
     Literal
-    Type . class
-    void . class
-    this
-    ClassName . this
-    ( Expression )
+    Type  '.'  'class'
+    'void'  '.'  'class'
+    'this'
+    ClassName  '.'  'this'
+    '('  Expression  ')'
     ClassInstanceCreationExpression
     FieldAccess
     MethodInvocation
@@ -598,51 +575,46 @@ Literal:
     NullLiteral
 
 ClassInstanceCreationExpression:
-    new TypeArguments(?) TypeDeclSpecifier TypeArgumentsOrDiamond(?)
-                                                            ( ArgumentList(?) ) ClassBody(?)
-    Primary . new TypeArguments(?) Identifier TypeArgumentsOrDiamond(?)
-                                                            ( ArgumentList(?) ) ClassBody(?)
+    'new'  TypeArguments(?)  TypeDeclSpecifier  TypeArgumentsOrDiamond(?)  '('  ArgumentList(?)  ')'  ClassBody(?)
+    Primary  '.'  'new'  TypeArguments(?)  Identifier  TypeArgumentsOrDiamond(?)  '('  ArgumentList(?)  ')'  ClassBody(?)
 
 TypeArgumentsOrDiamond:
     TypeArguments
-    <> 
+    '<'  '>' 
 
 ArgumentList:
-    Expression
-    ArgumentList , Expression
+    sepBy1(Expression, ',')
 
 ArrayCreationExpression:
-    new PrimitiveType DimExprs Dims(?)
-    new ClassOrInterfaceType DimExprs Dims(?)
-    new PrimitiveType Dims ArrayInitializer 
-    new ClassOrInterfaceType Dims ArrayInitializer
+    'new'  PrimitiveType  DimExprs  Dims(?)
+    'new'  ClassOrInterfaceType  DimExprs  Dims(?)
+    'new'  PrimitiveType  Dims  ArrayInitializer 
+    'new'  ClassOrInterfaceType  Dims  ArrayInitializer
 
 DimExprs:
-    DimExpr
-    DimExprs DimExpr
+    DimExpr(+)
 
 DimExpr:
-    [ Expression ]
+    '['  Expression  ']'
 
 Dims:
-    [ ]
-    Dims [ ]
+    ( '['  ']' )(+)
 
 FieldAccess: 
-    Primary . Identifier
-    super . Identifier
-    ClassName . super . Identifier
+    Primary  '.'  Identifier
+    'super'  '.'  Identifier
+    ClassName  '.'  'super'  '.'  Identifier
 
 MethodInvocation:
-    MethodName ( ArgumentList(?) )
-    Primary . NonWildTypeArguments(?) Identifier ( ArgumentList(?) )
-    super . NonWildTypeArguments(?) Identifier ( ArgumentList(?) )
-    ClassName . super . NonWildTypeArguments(?) Identifier ( ArgumentList(?) )
-    TypeName . NonWildTypeArguments Identifier ( ArgumentList(?) )
+    MethodName  '('  ArgumentList(?)  ')'
+    Primary  '.'  NonWildTypeArguments(?)  Identifier  '('  ArgumentList(?)  ')'
+    'super'  '.'  NonWildTypeArguments(?)  Identifier  '('  ArgumentList(?)  ')'
+    ClassName  '.'  'super'  '.'  NonWildTypeArguments(?)  Identifier  '('  ArgumentList(?)  ')'
+    TypeName  '.'  NonWildTypeArguments  Identifier  '('  ArgumentList(?)  ')'
 
 ArrayAccess:
-    ExpressionName [ Expression ]
-    PrimaryNoNewArray [ Expression ]
+    ExpressionName  '['  Expression  ']'
+    PrimaryNoNewArray  '['  Expression  ']'
 
 PostfixExpression:
     Primary
@@ -753,4 +725,3 @@ Expression:
 
 ConstantExpression:
     Expression
-
