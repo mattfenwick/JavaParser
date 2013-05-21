@@ -314,7 +314,7 @@ AnnotationTypeElementDeclarations:
     AnnotationTypeElementDeclaration(+)
 
 AnnotationTypeElementDeclaration:
-    AbstractMethodModifiers(?)  Type  Identifier  '('  ')'  Dims(?)  DefaultValue(?)  ';'
+    AbstractMethodModifiers(?)  Type  Identifier  '('  ')'  Dim(*)  DefaultValue(?)  ';'
     ConstantDeclaration
     ClassDeclaration
     InterfaceDeclaration
@@ -586,19 +586,16 @@ ArgumentList:
     sepBy1(Expression, ',')
 
 ArrayCreationExpression:
-    'new'  PrimitiveType  DimExprs  Dims(?)
-    'new'  ClassOrInterfaceType  DimExprs  Dims(?)
-    'new'  PrimitiveType  Dims  ArrayInitializer 
-    'new'  ClassOrInterfaceType  Dims  ArrayInitializer
-
-DimExprs:
-    DimExpr(+)
+    'new'  PrimitiveType  DimExpr(+)  Dim(*)
+    'new'  ClassOrInterfaceType  DimExpr(+)  Dim(*)
+    'new'  PrimitiveType  Dim(+)  ArrayInitializer 
+    'new'  ClassOrInterfaceType  Dim(+)  ArrayInitializer
 
 DimExpr:
     '['  Expression  ']'
 
-Dims:
-    ( '['  ']' )(+)
+Dim:
+    '['  ']'
 
 FieldAccess: 
     Primary  '.'  Identifier
