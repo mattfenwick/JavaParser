@@ -7,9 +7,6 @@
     QualifiedIdentifier:
         sepBy1(Identifier, '.')
     
-    QualifiedIdentifierList: 
-        sepBy1(QualifiedIdentifier, ',')
-    
     CompilationUnit: 
         ( Annotation(*)  'package'  QualifiedIdentifier  ';' )(?)  
         ImportDeclaration(*)  
@@ -102,15 +99,17 @@
         TypeDeclaration
     
     Method:
-        TypeParameters(?)  ( Type  |  'void' )  Identifier  FormalParameters  Braces(*)  
-        ( 'throws'  QualifiedIdentifierList )(?)  ( Block  |  ';' )
+        TypeParameters(?)  ( Type  |  'void' )  Identifier  
+        FormalParameters  Braces(*)  Throws(?)  ( Block  |  ';' )
     
+    Throws:
+        'throws'  sepBy1(QualifiedIdentifier, ',')
+        
     Field:
         Type  sepBy1(VariableDeclarator, ',')  ';'
 
     Constructor:
-        TypeParameters(?)  Identifier  FormalParameters  
-        ( 'throws'  QualifiedIdentifierList )(?)  Block
+        TypeParameters(?)  Identifier  FormalParameters  Throws(?)  Block
     
     InterfaceMember:
         InterfaceField      |
@@ -121,8 +120,8 @@
         Type  sepBy1(Identifier  Braces(*)  '='  VariableInitializer, ',')  ';'
     
     InterfaceMethod:
-        TypeParameters(?)  ( Type  |  'void' )  Identifier  FormalParameters  
-        Braces(*)  ( 'throws'  QualifiedIdentifierList )(?)  ';'
+        TypeParameters(?)  ( Type  |  'void' )  Identifier  
+        FormalParameters  Braces(*)  Throws(?)  ';'
     
     FormalParameters: 
         '('  sepBy0(FormalParameter, ',')  VarArgs(?)  ')'
@@ -140,17 +139,14 @@
     EnumConstant:
         Annotation(*)  Identifier  Arguments(?)  ClassBody(?)
     
-    
     AnnotationTypeElement:
         Modifier(*)  ( AnnotationMethod  |  InterfaceField  |  TypeDeclaration )
     
     AnnotationMethod:
         Type  Identifier  '('  ')'  Braces(?)  ( 'default'  ElementValue )(?)  ';'
     
-    
     IdentBraces:
         Identifier  Braces(*)
-    
     
     VariableDeclarator:
         Identifier  Braces(*)  ( '='  VariableInitializer )(?)
