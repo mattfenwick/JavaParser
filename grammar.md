@@ -302,7 +302,7 @@
     CreatedName:
         sepBy1(x, '.')
       where
-        x = Identifier  ( ( '<'  '>' )  |  TypeArguments )(?)
+        x = Identifier  ( ( '<'  '>' )  |  sepBy1(TypeArgument, ',') )(?)
     
     ClassCreatorRest: 
         Arguments  ClassBody(?)
