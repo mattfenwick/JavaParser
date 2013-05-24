@@ -6,34 +6,8 @@ PrimitiveType:
     'byte'  |  'short'  |  'int'  |  'long'  |  'char'  |  'float'  |  'double'  |  'boolean'
 
 ReferenceType:
-    ClassOrInterfaceType
-    TypeVariable
-    ArrayType
-
-ClassOrInterfaceType:
-    ClassType
-    InterfaceType
-
-ClassType:
-InterfaceType:
-    TypeDeclSpecifier  TypeArguments(?)
-
-TypeDeclSpecifier:
-    TypeName  
-    ClassOrInterfaceType  '.'  Identifier
-
-TypeVariable:
-    Identifier
-
-ArrayType:
+    sepBy1(Identifier  TypeArguments(?), '.')
     Type  '['  ']'
-    
-TypeParameter:
-    TypeVariable  TypeBound(?)
-
-TypeBound:
-    'extends'  TypeVariable
-    'extends'  ClassOrInterfaceType  ( '&'  InterfaceType )(*)
 
 TypeArguments:
     '<'  sepBy1(TypeArgument, ',')  '>'
@@ -44,6 +18,14 @@ TypeArgument:
     '?'  'extends'  ReferenceType
     '?'  'super'  ReferenceType
 
+
+ClassOrInterfaceType:
+    ClassType
+    InterfaceType
+
+ClassType:
+InterfaceType:
+    sepBy1(Identifier  TypeArguments(?), '.')
 
 PackageName:
 TypeName:
@@ -96,6 +78,11 @@ ClassModifier:
 TypeParameters:
     '<'  sepBy1(TypeParameter, ',')  '>'
 
+TypeParameter:
+    Identifier
+    Identifier  'extends'  Identifier
+    Identifier  'extends'  sepBy1(sepBy1(Identifier  TypeArguments(?), '.'), '&')
+
 Super:
     'extends'  ClassType
 
@@ -110,8 +97,7 @@ ClassBody:
 
 ClassBodyDeclaration:
     ClassMemberDeclaration
-    InstanceInitializer
-    StaticInitializer
+    'static'(?)  Block
     ConstructorDeclaration
 
 ClassMemberDeclaration:
@@ -173,21 +159,11 @@ Result:
     'void'
 
 Throws:
-    'throws'  sepBy1(ExceptionType, ',')
-
-ExceptionType:
-    TypeName 
-    TypeVariable
+    'throws'  sepBy1(TypeName, ',')
 
 MethodBody:
     Block 
     ';'
-
-InstanceInitializer:
-    Block
-    
-StaticInitializer:
-    'static'  Block
 
 ConstructorDeclaration:
     ConstructorModifier(*)  TypeParameters(?)  SimpleTypeName  FormalParameterList  Throws(?)  ConstructorBody
@@ -465,6 +441,9 @@ Literal:
 ClassInstanceCreationExpression:
     'new'  TypeArguments(?)  TypeDeclSpecifier  TypeArgumentsOrDiamond(?)  ArgumentList  ClassBody(?)
     Primary  '.'  'new'  TypeArguments(?)  Identifier  TypeArgumentsOrDiamond(?)  ArgumentList  ClassBody(?)
+
+TypeDeclSpecifier:
+    sepBy1(Identifier, '.')  ( TypeArguments(?)  '.'  Identifier )(*)
 
 TypeArgumentsOrDiamond:
     TypeArguments
