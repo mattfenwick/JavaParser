@@ -209,9 +209,9 @@ ConstructorBody:
     '{'  ExplicitConstructorInvocation(?)  BlockStatement(*)  '}'
 
 ExplicitConstructorInvocation:
-    NonWildTypeArguments(?)  'this'  '('  ArgumentList(?)  ')'  ';'
-    NonWildTypeArguments(?)  'super'  '('  ArgumentList(?)  ')'  ';'
-    Primary  '.'  NonWildTypeArguments(?)  'super'  '('  ArgumentList(?)  ')'  ';'
+    NonWildTypeArguments(?)  'this'  ArgumentList  ';'
+    NonWildTypeArguments(?)  'super'  ArgumentList  ';'
+    Primary  '.'  NonWildTypeArguments(?)  'super'  ArgumentList  ';'
 
 NonWildTypeArguments:
     '<'  sepBy1(ReferenceType, ',')  '>'
@@ -220,16 +220,10 @@ EnumDeclaration:
     ClassModifiers(?)  'enum'  Identifier  Interfaces(?)  EnumBody
 
 EnumBody:
-    '{'  sepBy0(EnumConstant, ',')  ','(?)  EnumBodyDeclarations(?)  '}'
+    '{'  sepBy0(EnumConstant, ',')  ','(?)  ( ';'  ClassBodyDeclaration(*) )(?)  '}'
 
 EnumConstant:
-    Annotation(*)  Identifier  Arguments(?)  ClassBody(?)
-
-Arguments:
-    '('  ArgumentList(?)  ')'
-
-EnumBodyDeclarations:
-    ';'  ClassBodyDeclaration(*)
+    Annotation(*)  Identifier  ArgumentList(?)  ClassBody(?)
 
 
 InterfaceDeclaration:
@@ -237,8 +231,7 @@ InterfaceDeclaration:
     AnnotationTypeDeclaration
 
 NormalInterfaceDeclaration:
-    InterfaceModifier(*)  'interface'  Identifier
-    TypeParameters(?)  ExtendsInterfaces(?) p InterfaceBody
+    InterfaceModifier(*)  'interface'  Identifier  TypeParameters(?)  ExtendsInterfaces(?)  InterfaceBody
 
 InterfaceModifier:
     Annotation  |  'public'  |  'protected'  |  'private'
@@ -510,15 +503,15 @@ Literal:
     NullLiteral
 
 ClassInstanceCreationExpression:
-    'new'  TypeArguments(?)  TypeDeclSpecifier  TypeArgumentsOrDiamond(?)  '('  ArgumentList(?)  ')'  ClassBody(?)
-    Primary  '.'  'new'  TypeArguments(?)  Identifier  TypeArgumentsOrDiamond(?)  '('  ArgumentList(?)  ')'  ClassBody(?)
+    'new'  TypeArguments(?)  TypeDeclSpecifier  TypeArgumentsOrDiamond(?)  ArgumentList  ClassBody(?)
+    Primary  '.'  'new'  TypeArguments(?)  Identifier  TypeArgumentsOrDiamond(?)  ArgumentList  ClassBody(?)
 
 TypeArgumentsOrDiamond:
     TypeArguments
     '<'  '>' 
 
 ArgumentList:
-    sepBy1(Expression, ',')
+    '('  sepBy0(Expression, ',')  ')'
 
 ArrayCreationExpression:
     'new'  PrimitiveType  DimExpr(+)  Dim(*)
@@ -538,11 +531,11 @@ FieldAccess:
     ClassName  '.'  'super'  '.'  Identifier
 
 MethodInvocation:
-    MethodName  '('  ArgumentList(?)  ')'
-    Primary  '.'  NonWildTypeArguments(?)  Identifier  '('  ArgumentList(?)  ')'
-    'super'  '.'  NonWildTypeArguments(?)  Identifier  '('  ArgumentList(?)  ')'
-    ClassName  '.'  'super'  '.'  NonWildTypeArguments(?)  Identifier  '('  ArgumentList(?)  ')'
-    TypeName  '.'  NonWildTypeArguments  Identifier  '('  ArgumentList(?)  ')'
+    MethodName  ArgumentList
+    Primary  '.'  NonWildTypeArguments(?)  Identifier  ArgumentList
+    'super'  '.'  NonWildTypeArguments(?)  Identifier  ArgumentList
+    ClassName  '.'  'super'  '.'  NonWildTypeArguments(?)  Identifier  ArgumentList
+    TypeName  '.'  NonWildTypeArguments  Identifier  ArgumentList
 
 ArrayAccess:
     ExpressionName  '['  Expression  ']'
