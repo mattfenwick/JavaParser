@@ -154,12 +154,13 @@ MethodHeader:
     MethodModifier(*)  TypeParameters(?)  Result  MethodDeclarator  Throws(?)
 
 MethodDeclarator:
-    Identifier  '('  FormalParameterList(?)  ')'
+    Identifier  FormalParameterList
     MethodDeclarator  '['  ']'         <-- spec says this is obsolete and don't use it!!!!  instead use the first alternative
 
 FormalParameterList:
-    LastFormalParameter
-    sepBy1(FormalParameter, ',')  ','  LastFormalParameter
+    '('  ')'
+    '('  LastFormalParameter  ')'
+    '('  sepBy1(FormalParameter, ',')  ','  LastFormalParameter  ')'
 
 FormalParameter:
     VariableModifier(*)  Type  VariableDeclaratorId
@@ -197,18 +198,15 @@ StaticInitializer:
     'static'  Block
 
 ConstructorDeclaration:
-    ConstructorModifier(*)  ConstructorDeclarator  Throws(?)  ConstructorBody
-
-ConstructorDeclarator:
-    TypeParameters(?)  SimpleTypeName  '('  FormalParameterList(?)  ')'
+    ConstructorModifier(*)  TypeParameters(?)  SimpleTypeName  FormalParameterList  Throws(?)  ConstructorBody
 
 ConstructorModifier:
     Annotation  |  'public'  |  'protected'  |  'private'
 
 ConstructorBody:
-    '{'  ExplicitConstructorInvocation(?)  BlockStatement(*)  '}'
+    '{'  ConstructorInvocation(?)  BlockStatement(*)  '}'
 
-ExplicitConstructorInvocation:
+ConstructorInvocation:
     NonWildTypeArguments(?)  'this'  ArgumentList  ';'
     NonWildTypeArguments(?)  'super'  ArgumentList  ';'
     Primary  '.'  NonWildTypeArguments(?)  'super'  ArgumentList  ';'
@@ -231,7 +229,7 @@ InterfaceDeclaration:
     AnnotationTypeDeclaration
 
 NormalInterfaceDeclaration:
-    InterfaceModifier(*)  'interface'  Identifier  TypeParameters(?)  ExtendsInterfaces(?)  InterfaceBody
+    InterfaceModifier(*)  'interface'  Identifier  TypeParameters(?)  ExtendsInterfaces(?)  '{'  InterfaceMember(*)  '}'
 
 InterfaceModifier:
     Annotation  |  'public'  |  'protected'  |  'private'
@@ -240,10 +238,7 @@ InterfaceModifier:
 ExtendsInterfaces:
     'extends'  InterfaceTypeList
 
-InterfaceBody:
-    '{'  InterfaceMemberDeclaration(*)  '}'
-
-InterfaceMemberDeclaration:
+InterfaceMember:
     ConstantDeclaration
     AbstractMethodDeclaration
     ClassDeclaration 
@@ -263,15 +258,9 @@ AbstractMethodModifier:
     Annotation  |  'public'  |  'abstract'
 
 AnnotationTypeDeclaration:
-    InterfaceModifier(*)  '@'  'interface'  Identifier  AnnotationTypeBody
+    InterfaceModifier(*)  '@'  'interface'  Identifier  '{'  AnnotationTypeElement(*)  '}'
 
-AnnotationTypeBody:
-    '{'  AnnotationTypeElementDeclarations(?)  '}'
-
-AnnotationTypeElementDeclarations:
-    AnnotationTypeElementDeclaration(+)
-
-AnnotationTypeElementDeclaration:
+AnnotationTypeElement:
     AbstractMethodModifier(*)  Type  Identifier  '('  ')'  Dim(*)  DefaultValue(?)  ';'
     ConstantDeclaration
     ClassDeclaration
@@ -289,10 +278,7 @@ Annotation:
     SingleElementAnnotation
 
 NormalAnnotation:
-    '@'  TypeName  '('  ElementValuePairs(?)  ')'
-
-ElementValuePairs:
-    sepBy1(ElementValuePair, ',')
+    '@'  TypeName  '('  sepBy0(ElementValuePair, ',')  ')'
 
 ElementValuePair:
     Identifier  '='  ElementValue
@@ -303,10 +289,7 @@ ElementValue:
     ElementValueArrayInitializer
 
 ElementValueArrayInitializer:
-    '{'  ElementValues(?)  ','(?)  '}'
-
-ElementValues:
-    sepBy1(ElementValue, ',')
+    '{'  sepBy0(ElementValue, ',')  ','(?)  '}'
 
 MarkerAnnotation:
     '@'  Identifier
@@ -316,22 +299,16 @@ SingleElementAnnotation:
 
 
 ArrayInitializer:
-    '{'  VariableInitializers(?)  ','(?)  '}'
-
-VariableInitializers:
-    sepBy1(VariableInitializer, ',')
+    '{'  sepBy0(VariableInitializer, ',')  ','(?)  '}'
 
 
 Block:
     '{'  BlockStatement(*)  '}'
 
 BlockStatement:
-    LocalVariableDeclarationStatement
+    LocalVariableDeclaration  ';'
     ClassDeclaration
     Statement
-
-LocalVariableDeclarationStatement:
-    LocalVariableDeclaration  ';'
 
 LocalVariableDeclaration:
     VariableModifier(*)  Type  VariableDeclarators
