@@ -132,12 +132,10 @@ VariableDeclarators:
     sepBy1(VariableDeclarator, ',')
 
 VariableDeclarator:
-    VariableDeclaratorId
-    VariableDeclaratorId  '='  VariableInitializer
+    IdentBraces  ( '='  VariableInitializer )(?)
 
-VariableDeclaratorId:
-    Identifier
-    VariableDeclaratorId  '['  ']'
+IdentBraces:
+    Identifier  ( '['  ']' )(*)
 
 VariableInitializer:
     Expression
@@ -163,13 +161,13 @@ FormalParameterList:
     '('  sepBy1(FormalParameter, ',')  ','  LastFormalParameter  ')'
 
 FormalParameter:
-    VariableModifier(*)  Type  VariableDeclaratorId
+    VariableModifier(*)  Type  IdentBraces
 
 VariableModifier:
     Annotation  |  'final'
 
 LastFormalParameter:
-    VariableModifier(*)  Type  '...'  VariableDeclaratorId
+    VariableModifier(*)  Type  '...'  IdentBraces
     FormalParameter
 
 MethodModifier:
@@ -437,7 +435,7 @@ TryStatement:
     TryWithResourcesStatement
 
 CatchClause:
-    'catch'  '('  VariableModifier(*)  CatchType  VariableDeclaratorId  ')'  Block
+    'catch'  '('  VariableModifier(*)  CatchType  IdentBraces  ')'  Block
 
 CatchType:
     sepBy1(ClassType, '|')
@@ -452,7 +450,7 @@ ResourceSpecification:
     '('  sepBy1(Resource, ';')  ';'(?)  ')'
 
 Resource:
-    VariableModifier(*)  Type  VariableDeclaratorId  '='  Expression
+    VariableModifier(*)  Type  IdentBraces  '='  Expression
 
 
 Primary:
