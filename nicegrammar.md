@@ -42,23 +42,8 @@ CompilationUnit:
 PackageDeclaration:
     Annotation(*)  'package'  PackageName  ';'
 
-ImportDeclaration:
-    SingleTypeImportDeclaration
-    TypeImportOnDemandDeclaration   
-    SingleStaticImportDeclaration   
-    StaticImportOnDemandDeclaration
-
-SingleTypeImportDeclaration:
-    'import'  TypeName  ';'
-
-TypeImportOnDemandDeclaration:
-    'import'  PackageOrTypeName  '.'  '*'  ';'
-
-SingleStaticImportDeclaration:
-    'import'  'static'  TypeName  '.'  Identifier  ';'
-
-StaticImportOnDemandDeclaration:
-    'import'  'static'  TypeName  '.'  '*'  ';'
+ImportDeclaration: 
+    'import'  'static'(?)  sepBy1(Identifier, '.')  ( '.'  '*' )(?)  ';'
 
 TypeDeclaration:
     Class
@@ -79,9 +64,7 @@ TypeParameters:
     '<'  sepBy1(TypeParameter, ',')  '>'
 
 TypeParameter:
-    Identifier
-    Identifier  'extends'  Identifier
-    Identifier  'extends'  sepBy1(sepBy1(Identifier  TypeArguments(?), '.'), '&')
+    Identifier  ( 'extends'  sepBy1(sepBy1(Identifier  TypeArguments(?), '.'), '&') )(?)
 
 Super:
     'extends'  ClassType
