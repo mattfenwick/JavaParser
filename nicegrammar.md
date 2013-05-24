@@ -15,8 +15,6 @@ ClassOrInterfaceType:
     InterfaceType
 
 ClassType:
-    TypeDeclSpecifier  TypeArguments(?)
-
 InterfaceType:
     TypeDeclSpecifier  TypeArguments(?)
 
@@ -81,16 +79,14 @@ StaticImportOnDemandDeclaration:
     'import'  'static'  TypeName  '.'  '*'  ';'
 
 TypeDeclaration:
-    ClassDeclaration
-    InterfaceDeclaration
+    Class
+    Enum
+    Interface
+    AnnotationType
     ';'
 
 
-ClassDeclaration:
-    NormalClassDeclaration
-    EnumDeclaration
-
-NormalClassDeclaration:
+Class:
     ClassModifiers(*)  'class'  Identifier  TypeParameters(?)  Super(?)  Interfaces(?)  ClassBody
 
 ClassModifier:
@@ -121,9 +117,7 @@ ClassBodyDeclaration:
 ClassMemberDeclaration:
     FieldDeclaration
     MethodDeclaration
-    ClassDeclaration    
-    InterfaceDeclaration
-    ';'
+    TypeDeclaration
 
 FieldDeclaration:
     FieldModifier(*)  Type  VariableDeclarators  ';'
@@ -212,7 +206,7 @@ ConstructorInvocation:
 NonWildTypeArguments:
     '<'  sepBy1(ReferenceType, ',')  '>'
 
-EnumDeclaration:
+Enum:
     ClassModifiers(?)  'enum'  Identifier  Interfaces(?)  EnumBody
 
 EnumBody:
@@ -222,11 +216,7 @@ EnumConstant:
     Annotation(*)  Identifier  ArgumentList(?)  ClassBody(?)
 
 
-InterfaceDeclaration:
-    NormalInterfaceDeclaration
-    AnnotationTypeDeclaration
-
-NormalInterfaceDeclaration:
+Interface:
     InterfaceModifier(*)  'interface'  Identifier  TypeParameters(?)  ExtendsInterfaces(?)  '{'  InterfaceMember(*)  '}'
 
 InterfaceModifier:
@@ -239,9 +229,7 @@ ExtendsInterfaces:
 InterfaceMember:
     ConstantDeclaration
     AbstractMethodDeclaration
-    ClassDeclaration 
-    InterfaceDeclaration
-    ';'   
+    TypeDeclaration
 
 ConstantDeclaration:
     ConstantModifier(*)  Type  VariableDeclarators  ';'
@@ -255,17 +243,13 @@ AbstractMethodDeclaration:
 AbstractMethodModifier:
     Annotation  |  'public'  |  'abstract'
 
-AnnotationTypeDeclaration:
+AnnotationType:
     InterfaceModifier(*)  '@'  'interface'  Identifier  '{'  AnnotationTypeElement(*)  '}'
 
 AnnotationTypeElement:
     AbstractMethodModifier(*)  Type  Identifier  '('  ')'  Dim(*)  DefaultValue(?)  ';'
     ConstantDeclaration
-    ClassDeclaration
-    InterfaceDeclaration
-    EnumDeclaration
-    AnnotationTypeDeclaration
-    ';'
+    TypeDeclaration
 
 DefaultValue:
     'default'  ElementValue
@@ -305,7 +289,8 @@ Block:
 
 BlockStatement:
     LocalVariableDeclaration  ';'
-    ClassDeclaration
+    Class
+    Enum
     Statement
 
 LocalVariableDeclaration:
