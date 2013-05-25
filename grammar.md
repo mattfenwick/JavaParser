@@ -51,9 +51,6 @@
         ( '?'  'extends'  ReferenceType )   |
         ( '?'  'super'    ReferenceType )
     
-    NonWildcardTypeArguments:
-        '<'  TypeList  '>'
-    
     TypeList:
         sepBy1(ReferenceType, ',')
     
@@ -271,8 +268,9 @@
         ( 'this'  Arguments(?) )                                              |
         ( 'super'  SuperSuffix )                                              |
         ( 'new'  Creator )                                                    |
-        ( NonWildcardTypeArguments  ExplicitGenericInvocationSuffix )         |  
-        ( NonWildcardTypeArguments  'this'  Arguments )                       |
+        ( '<'  TypeList  '>'  'super'  SuperSuffix )                          |  
+        ( '<'  TypeList  '>'  Identifier  Arguments )                         |  
+        ( '<'  TypeList  '>'  'this'  Arguments )                             |
         ( sepBy1(Identifier, '.')  IdentifierSuffix(?) )                      |
         ( BasicType  Braces(*)  '.'  'class' )                                |
         ( 'void'  '.'  'class' )
@@ -296,20 +294,13 @@
         Arguments   | 
         ( '.'  Identifier  Arguments(?) )
     
-    ExplicitGenericInvocationSuffix: 
-        ( 'super'  SuperSuffix )  |
-        ( Identifier  Arguments )
-    
     Creator:  
-        ( NonWildcardTypeArguments  CreatedName  ClassCreatorRest )  |
-        ( CreatedName  ( ClassCreatorRest  |  ArrayCreatorRest ) )
+        ( '<'  TypeList  '>'  CreatedName  ClassCreatorRest )  |
+        ( CreatedName  ClassCreatorRest )                      |  
+        ( CreatedName  ArrayCreatorRest )
     
     CreatedName:
-        sepBy1(x, '.')
-      where
-        x =  Identifier  sepBy1(TypeArgument, ',')  |
-             Identifier  '<'  '>'                   |
-             Identifier
+        sepBy1(Identifier  ('<'  sepBy0(TypeArgument, ',')  '>' )(?), '.')
     
     ClassCreatorRest: 
         Arguments  ClassBody(?)
@@ -323,17 +314,19 @@
         ( '['  Braces(*)  '.'  'class'  ']' )                       |
         ( '['  Expression  ']' )                                    |
         Arguments                                                   |
-        ( '.'  'new'  NonWildcardTypeArguments(?)  InnerCreator )   |
+        ( '.'  'new'  ( '<'  TypeList  '>' )(?)  InnerCreator )     |
         ( '.'  'class' )                                            |
         ( '.'  ExplicitGenericInvocation )                          |
         ( '.'  'this' )                                             |
         ( '.'  'super'  Arguments )
     
     ExplicitGenericInvocation:
-        NonWildcardTypeArguments  ExplicitGenericInvocationSuffix
+        ( '<'  TypeList  '>'  'super'  SuperSuffix  )    |
+        ( '<'  TypeList  '>'  Identifier  Arguments )
     
     InnerCreator:  
-        Identifier  ( ( '<'  '>' )  |  NonWildcardTypeArguments )(?)  ClassCreatorRest
+        ( Identifier  '<'  TypeList(?)  '>'  ClassCreatorRest )   |
+        ( Identifier  ClassCreatorRest                        )
     
     
     Selector:
@@ -341,5 +334,5 @@
         ( '.'  ExplicitGenericInvocation )                         |
         ( '.'  'this' )                                            |
         ( '.'  'super'  SuperSuffix )                              |
-        ( '.'  'new'  NonWildcardTypeArguments(?)  InnerCreator )  |
+        ( '.'  'new'  ( '<'  TypeList  '>' )(?)  InnerCreator )    |
         ( '['  Expression  ']' )
