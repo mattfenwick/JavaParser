@@ -4,12 +4,11 @@
 --   but maybe keep track of the differences
 
 Type:
-    ( PrimitiveType  |  ReferenceType )  ( '['  ']' )(*)
+    BaseType  ( '['  ']' )(*)
     
-PrimitiveType:
-    'byte'  |  'short'  |  'int'  |  'long'  |  'char'  |  'float'  |  'double'  |  'boolean'
-
-ReferenceType:
+BaseType:
+    'byte'  |  'short'  |  'int'     |  'long'     |  
+    'char'  |  'float'  |  'double'  |  'boolean'  |
     sepBy1(Identifier  TypeArguments(?), '.')
 
 TypeArguments:
@@ -18,7 +17,8 @@ TypeArguments:
 TypeArgument:
     Type
     '?'
-    '?'  ( 'extends'  |  'super' )  Type
+    '?'  'super'  Type
+    '?'  'extends'  sepBy1(Type, '&')
 
 FullName:
     sepBy1(Identifier, '.')
@@ -42,18 +42,12 @@ TypeDeclaration:
 
 
 Class:
-    Modifier(*)  'class'  Identifier  TypeParameters(?)  Super(?)  Interfaces(?)  ClassBody
+    Modifier(*)  'class'  Identifier  TypeArguments(?)  Super(?)  Interfaces(?)  ClassBody
 
 Modifier:
     Annotation  |  'public'   |  'protected'     |  'private'  |  'abstract'  |
     'static'    |  'final'    |  'synchronized'  |  'native'   |  'strictfp'  |
     'transient' |  'volatile' |
-
-TypeParameters:
-    '<'  sepBy1(TypeParameter, ',')  '>'
-
-TypeParameter:
-    Identifier  ( 'extends'  sepBy1(Type, '&') )(?)
 
 Super:
     'extends'  Type
@@ -85,7 +79,7 @@ VariableInitializer:
     ArrayInitializer
 
 MethodDeclaration:
-    Modifier(*)  TypeParameters(?)  Result  Identifier  FormalParameterList  Throws(?)  ( Block  |  ';' )
+    Modifier(*)  TypeArguments(?)  Result  Identifier  FormalParameterList  Throws(?)  ( Block  |  ';' )
     
 FormalParameterList:
     '('  ')'
@@ -108,18 +102,15 @@ Throws:
 
 
 ConstructorDeclaration:
-    Modifier(*)  TypeParameters(?)  Identifier  FormalParameterList  Throws(?)  ConstructorBody
+    Modifier(*)  TypeArguments(?)  Identifier  FormalParameterList  Throws(?)  ConstructorBody
 
 ConstructorBody:
     '{'  ConstructorInvocation(?)  BlockStatement(*)  '}'
 
 ConstructorInvocation:
-    NonWildTypeArguments(?)  'this'  ArgumentList  ';'
-    NonWildTypeArguments(?)  'super'  ArgumentList  ';'
-    Primary  '.'  NonWildTypeArguments(?)  'super'  ArgumentList  ';'
-
-NonWildTypeArguments:
-    '<'  sepBy1(Type, ',')  '>'
+    TypeArguments(?)  'this'  ArgumentList  ';'
+    TypeArguments(?)  'super'  ArgumentList  ';'
+    Primary  '.'  TypeArguments(?)  'super'  ArgumentList  ';'
 
 Enum:
     Modifier(*)  'enum'  Identifier  Interfaces(?)  EnumBody
@@ -132,7 +123,7 @@ EnumConstant:
 
 
 Interface:
-    Modifier(*)  'interface'  Identifier  TypeParameters(?)  ExtendsInterfaces(?)  '{'  InterfaceMember(*)  '}'
+    Modifier(*)  'interface'  Identifier  TypeArguments(?)  ExtendsInterfaces(?)  '{'  InterfaceMember(*)  '}'
 
 ExtendsInterfaces:
     'extends'  sepBy1(Type, ',')
@@ -143,7 +134,7 @@ InterfaceMember:
     TypeDeclaration
 
 AbstractMethodDeclaration:
-    Modifier(*)  TypeParameters(?)  Result  Identifier  FormalParameterList  Throws(?)  ';'
+    Modifier(*)  TypeArguments(?)  Result  Identifier  FormalParameterList  Throws(?)  ';'
 
 AnnotationType:
     Modifier(*)  '@'  'interface'  Identifier  '{'  AnnotationTypeElement(*)  '}'
@@ -392,10 +383,10 @@ FieldAccess:
 
 MethodInvocation:
     FullName  ArgumentList
-    Primary  '.'  NonWildTypeArguments(?)  Identifier  ArgumentList
-    'super'  '.'  NonWildTypeArguments(?)  Identifier  ArgumentList
-    FullName  '.'  'super'  '.'  NonWildTypeArguments(?)  Identifier  ArgumentList
-    FullName  '.'  NonWildTypeArguments  Identifier  ArgumentList
+    Primary  '.'  TypeArguments(?)  Identifier  ArgumentList
+    'super'  '.'  TypeArguments(?)  Identifier  ArgumentList
+    FullName  '.'  'super'  '.'  TypeArguments(?)  Identifier  ArgumentList
+    FullName  '.'  TypeArguments  Identifier  ArgumentList
 
 ArrayAccess:
     FullName  '['  Expression  ']'
