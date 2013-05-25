@@ -159,7 +159,8 @@
         Expression
     
     ArrayInitializer:
-        '{'  ( sepBy1(VariableInitializer, ',')  ','(?) )(?)  '}'
+        ( '{'  sepBy1(VariableInitializer, ',')  ','(?)  '}' )  |
+        '{'  '}'
     
     Block: 
         '{'  BlockStatement(*)  '}'
@@ -242,8 +243,9 @@
         Expression2  ( '?'  Expression  ':'  Expression1 )(?)
     
     Expression2:
-        Expression3  ( ( InfixOp Expression3 )(*)  |  
-                       ( 'instanceof'  Type )      )(?)
+        Expression3  
+        Expression3  ( InfixOp Expression3 )(*)
+        Expression3  ( 'instanceof'  Type )
     
     InfixOp: 
         '||'  |  '&&'  |  '|'   |  '^'   |
@@ -258,8 +260,7 @@
         ( Primary  Selector(*)  PostfixOp(*) )
     
     PrefixOp: 
-        '++'  |  '--'  |  '!'   |  '~'   |
-        '+'   |  '-'
+        '++'  |  '--'  |  '!'  |  '~'  |  '+'  |  '-'
     
     PostfixOp: 
         '++'  |  '--'
@@ -270,8 +271,8 @@
         ( 'this'  Arguments(?) )                                              |
         ( 'super'  SuperSuffix )                                              |
         ( 'new'  Creator )                                                    |
-        ( NonWildcardTypeArguments  ( ExplicitGenericInvocationSuffix  |  
-                                      ( 'this'  Arguments ) ) )               |
+        ( NonWildcardTypeArguments  ExplicitGenericInvocationSuffix )         |  
+        ( NonWildcardTypeArguments  'this'  Arguments )                       |
         ( sepBy1(Identifier, '.')  IdentifierSuffix(?) )                      |
         ( BasicType  Braces(*)  '.'  'class' )                                |
         ( 'void'  '.'  'class' )
