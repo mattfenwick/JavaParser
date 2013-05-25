@@ -42,7 +42,7 @@ TypeDeclaration:
 
 
 Class:
-    Modifiers(*)  'class'  Identifier  TypeParameters(?)  Super(?)  Interfaces(?)  ClassBody
+    Modifier(*)  'class'  Identifier  TypeParameters(?)  Super(?)  Interfaces(?)  ClassBody
 
 Modifier:
     Annotation  |  'public'   |  'protected'     |  'private'  |  'abstract'  |
@@ -70,18 +70,12 @@ ClassBodyDeclaration:
     ConstructorDeclaration
 
 ClassMemberDeclaration:
-    FieldDeclaration
+    VariableDeclaration  ';'
     MethodDeclaration
     TypeDeclaration
 
-FieldDeclaration:
-    Modifier(*)  Type  VariableDeclarators  ';'
-
-VariableDeclarators:
-    sepBy1(VariableDeclarator, ',')
-
-VariableDeclarator:
-    IdentBraces  ( '='  VariableInitializer )(?)
+VariableDeclaration:
+    Modifier(*)  Type  sepBy1(IdentBraces  ( '='  VariableInitializer )(?), ',')
 
 IdentBraces:
     Identifier  ( '['  ']' )(*)
@@ -128,7 +122,7 @@ NonWildTypeArguments:
     '<'  sepBy1(Type, ',')  '>'
 
 Enum:
-    Modifiers(?)  'enum'  Identifier  Interfaces(?)  EnumBody
+    Modifier(*)  'enum'  Identifier  Interfaces(?)  EnumBody
 
 EnumBody:
     '{'  sepBy0(EnumConstant, ',')  ','(?)  ( ';'  ClassBodyDeclaration(*) )(?)  '}'
@@ -144,12 +138,9 @@ ExtendsInterfaces:
     'extends'  sepBy1(Type, ',')
 
 InterfaceMember:
-    ConstantDeclaration
+    VariableDeclaration  ';'
     AbstractMethodDeclaration
     TypeDeclaration
-
-ConstantDeclaration:
-    Modifier(*)  Type  VariableDeclarators  ';'
 
 AbstractMethodDeclaration:
     Modifier(*)  TypeParameters(?)  Result  Identifier  FormalParameterList  Throws(?)  ';'
@@ -159,7 +150,7 @@ AnnotationType:
 
 AnnotationTypeElement:
     Modifier(*)  Type  Identifier  '('  ')'  Dim(*)  DefaultValue(?)  ';'
-    ConstantDeclaration
+    VariableDeclaration  ';'
     TypeDeclaration
 
 DefaultValue:
@@ -199,13 +190,10 @@ Block:
     '{'  BlockStatement(*)  '}'
 
 BlockStatement:
-    LocalVariableDeclaration  ';'
+    VariableDeclaration  ';'
     Class
     Enum
     Statement
-
-LocalVariableDeclaration:
-    Modifier(*)  Type  VariableDeclarators
 
 Statement:
     StatementWithoutTrailingSubstatement
@@ -302,7 +290,7 @@ ForStatementNoShortIf:
 
 ForInit:
     sepBy1(StatementExpression, ',')
-    LocalVariableDeclaration
+    VariableDeclaration
 
 ForUpdate:
     sepBy1(StatementExpression, ',')
