@@ -187,14 +187,10 @@ BlockStatement:
     Statement
 
 Statement:
-    StatementWithoutTrailingSubstatement
     LabeledStatement
     IfThenStatement
-    IfThenElseStatement
     WhileStatement
     ForStatement
-
-StatementWithoutTrailingSubstatement:
     Block
     EmptyStatement
     ExpressionStatement
@@ -208,21 +204,11 @@ StatementWithoutTrailingSubstatement:
     ThrowStatement
     TryStatement
 
-StatementNoShortIf:
-    StatementWithoutTrailingSubstatement
-    LabeledStatementNoShortIf
-    IfThenElseStatementNoShortIf
-    WhileStatementNoShortIf
-    ForStatementNoShortIf
-
 EmptyStatement:
     ';'
 
 LabeledStatement:
     Identifier  ':'  Statement
-
-LabeledStatementNoShortIf:
-    Identifier  ':'  StatementNoShortIf
 
 ExpressionStatement:
     StatementExpression  ';'
@@ -237,13 +223,7 @@ StatementExpression:
     ClassInstanceCreationExpression
 
 IfThenStatement:
-    'if'  '('  Expression  ')'  Statement
-
-IfThenElseStatement:
-    'if'  '('  Expression  ')'  StatementNoShortIf  'else'  Statement
-
-IfThenElseStatementNoShortIf:
-    'if'  '('  Expression  ')'  StatementNoShortIf  'else'  StatementNoShortIf
+    'if'  '('  Expression  ')'  Statement  ( 'else'  Statement )(?)
 
 AssertStatement:
     'assert'  Expression1  ';'
@@ -263,9 +243,6 @@ EnumConstantName:
 WhileStatement:
     'while'  '('  Expression  ')'  Statement
 
-WhileStatementNoShortIf:
-    'while'  '('  Expression  ')'  StatementNoShortIf
-
 DoStatement:
     'do'  Statement  'while'  '('  Expression  ')'  ';'
 
@@ -275,9 +252,6 @@ ForStatement:
 
 BasicForStatement:
     'for'  '('  ForInit(?)  ';'  Expression(?)  ';'  ForUpdate(?)  ')'  Statement
-
-ForStatementNoShortIf:
-    'for'  '('  ForInit(?)  ';'  Expression(?)  ';'  ForUpdate(?)  ')'  StatementNoShortIf
 
 ForInit:
     sepBy1(StatementExpression, ',')
