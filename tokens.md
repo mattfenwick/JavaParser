@@ -25,7 +25,7 @@ InputCharacter:
 
 
 Input:
-    InputElementsopt Subopt
+    InputElements(?) Sub(?)
 
 InputElements:
     InputElement
@@ -62,7 +62,7 @@ TraditionalComment:
     / * CommentTail
 
 EndOfLineComment:
-    / / CharactersInLineopt
+    / / CharactersInLine(?)
 
 CommentTail:
     * CommentTailStar
@@ -129,16 +129,16 @@ IntegerLiteral:
     BinaryIntegerLiteral 
 
 DecimalIntegerLiteral:
-    DecimalNumeral IntegerTypeSuffixopt
+    DecimalNumeral IntegerTypeSuffix(?)
 
 HexIntegerLiteral:
-    HexNumeral IntegerTypeSuffixopt
+    HexNumeral IntegerTypeSuffix(?)
 
 OctalIntegerLiteral:    
-    OctalNumeral IntegerTypeSuffixopt
+    OctalNumeral IntegerTypeSuffix(?)
 
 BinaryIntegerLiteral:
-    BinaryNumeral IntegerTypeSuffixopt
+    BinaryNumeral IntegerTypeSuffix(?)
 
 IntegerTypeSuffix: one of
     l L
@@ -146,12 +146,12 @@ IntegerTypeSuffix: one of
     
 DecimalNumeral:
     0
-    NonZeroDigit Digitsopt
+    NonZeroDigit Digits(?)
     NonZeroDigit Underscores Digits 
 
 Digits:
     Digit
-    Digit DigitsAndUnderscoresopt Digit 
+    Digit DigitsAndUnderscores(?) Digit 
 
 Digit:
     0
@@ -179,7 +179,7 @@ HexNumeral:
 
 HexDigits:
     HexDigit
-    HexDigit HexDigitsAndUnderscoresopt HexDigit 
+    HexDigit HexDigitsAndUnderscores(?) HexDigit 
 
 HexDigit: one of
     0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
@@ -199,7 +199,7 @@ OctalNumeral:
 
 OctalDigits:
     OctalDigit
-    OctalDigit OctalDigitsAndUnderscoresopt OctalDigit 
+    OctalDigit OctalDigitsAndUnderscores(?) OctalDigit 
 
 OctalDigit: one of
     0 1 2 3 4 5 6 7
@@ -214,23 +214,14 @@ OctalDigitOrUnderscore:
     
     
 BinaryNumeral:
-    0 b BinaryDigits 
-    0 B BinaryDigits
+    '0'  ( 'b'  |  'B')  BinaryDigits 
 
 BinaryDigits:
     BinaryDigit 
-    BinaryDigit BinaryDigitsAndUnderscoresopt BinaryDigit
+    BinaryDigit  ( BinaryDigit  |  '_' )(*)  BinaryDigit
 
-BinaryDigit: one of
-    0 1 
-
-BinaryDigitsAndUnderscores:
-    BinaryDigitOrUnderscore 
-    BinaryDigitsAndUnderscores BinaryDigitOrUnderscore 
-
-BinaryDigitOrUnderscore:
-    BinaryDigit
-    _ 
+BinaryDigit:
+    '0'  |  '1'
     
     
 FloatingPointLiteral:
@@ -238,10 +229,10 @@ FloatingPointLiteral:
     HexadecimalFloatingPointLiteral
 
 DecimalFloatingPointLiteral:
-    Digits . Digitsopt ExponentPartopt FloatTypeSuffixopt
-    . Digits ExponentPartopt FloatTypeSuffixopt
-    Digits ExponentPart FloatTypeSuffixopt
-    Digits ExponentPartopt FloatTypeSuffix
+    Digits . Digits(?) ExponentPart(?) FloatTypeSuffix(?)
+    . Digits ExponentPart(?) FloatTypeSuffix(?)
+    Digits ExponentPart FloatTypeSuffix(?)
+    Digits ExponentPart(?) FloatTypeSuffix
 
 ExponentPart:
     ExponentIndicator SignedInteger
@@ -250,7 +241,7 @@ ExponentIndicator: one of
     e E
 
 SignedInteger:
-    Signopt Digits
+    Sign(?) Digits
 
 Sign: one of
     + -
@@ -259,13 +250,13 @@ FloatTypeSuffix: one of
     f F d D
 
 HexadecimalFloatingPointLiteral:
-    HexSignificand BinaryExponent FloatTypeSuffixopt
+    HexSignificand BinaryExponent FloatTypeSuffix(?)
 
 HexSignificand:
     HexNumeral
     HexNumeral .
-    0 x HexDigitsopt . HexDigits
-    0 X HexDigitsopt . HexDigits
+    0 x HexDigits(?) . HexDigits
+    0 X HexDigits(?) . HexDigits
 
 BinaryExponent:
     BinaryExponentIndicator SignedInteger
@@ -287,7 +278,7 @@ SingleCharacter:
     
     
 StringLiteral:
-    " StringCharactersopt "
+    " StringCharacters(?) "
 
 StringCharacters:
     StringCharacter
