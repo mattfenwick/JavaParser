@@ -3,10 +3,7 @@ UnicodeInputCharacter:
     RawInputCharacter
 
 UnicodeEscape:
-    '\\'  UnicodeMarker  HexDigit(4)
-
-UnicodeMarker:
-    'u'(+)
+    '\\'  'u'(+)  HexDigit(4)
 
 RawInputCharacter:
     any Unicode character
@@ -48,50 +45,28 @@ WhiteSpace:
 
 
 Comment:
-    TraditionalComment
-    EndOfLineComment
-
-TraditionalComment:
-    '/*'  CommentTail
-
-EndOfLineComment:
-    '//'  CharactersInLine(?)
-
-CommentTail:
-    '*'  CommentTailStar
-    NotStar  CommentTail
-
-CommentTailStar:
-    '/'
-    '*'  CommentTailStar
-    NotStarNotSlash  CommentTail
-
-NotStar:
-    InputCharacter but not '*'
-    LineTerminator
-
-NotStarNotSlash:
-    InputCharacter but not '*' or '/'
-    LineTerminator
-
-CharactersInLine:
-    InputCharacter
-    CharactersInLine  InputCharacter
+    '/*'  (not1 '*/')  '*/'  -- <-- where 'not1' is defined by InputCharacter
+    '//'  InputCharacter(*)
 
 
 Identifier:
-    IdentifierChars but not a Keyword or BooleanLiteral or NullLiteral
-
-IdentifierChars:
-    JavaLetter
-    IdentifierChars  JavaLetterOrDigit
+    JavaLetter  JavaLetterOrDigit(*)     -- <-- but not a Keyword or BooleanLiteral or NullLiteral
 
 JavaLetter:
-    any Unicode character that is a Java letter (see below)
+    [a-zA-Z_$]
 
 JavaLetterOrDigit:
-    any Unicode character that is a Java letter-or-digit (see below)
+    JavaLetter  |  [0-9]
 
+{- Notes in Java spec:
+A "Java letter" is a character for which the method Character.isJavaIdentifierStart(int) returns true.
+A "Java letter-or-digit" is a character for which the method Character.isJavaIdentifierPart(int) returns true.
+
+Letters and digits may be drawn from the entire Unicode character set, 
+which supports most writing scripts in use in the world today, 
+including the large sets for Chinese, Japanese, and Korean. 
+This allows programmers to use identifiers in their programs that are written in their native languages.
+-}
 
 Keyword:
     'abstract'  |  'continue'  |  'for'         |  'new'        |  'switch'        |
@@ -116,26 +91,7 @@ Literal:
 
 
 IntegerLiteral:
-    DecimalIntegerLiteral
-    HexIntegerLiteral   
-    OctalIntegerLiteral
-    BinaryIntegerLiteral 
-
-DecimalIntegerLiteral:
-    DecimalNumeral  IntegerTypeSuffix(?)
-
-HexIntegerLiteral:
-    HexNumeral  IntegerTypeSuffix(?)
-
-OctalIntegerLiteral:    
-    OctalNumeral  IntegerTypeSuffix(?)
-
-BinaryIntegerLiteral:
-    BinaryNumeral  IntegerTypeSuffix(?)
-
-IntegerTypeSuffix:
-    'l'  |  'L'
-    
+    ( DecimalNumeral  |  HexNumeral  |    OctalNumeral  |  BinaryNumeral )  ( 'l'  |  'L' )(?)
     
 DecimalNumeral:
     '0'
@@ -189,20 +145,17 @@ BinaryDigit:
     
     
 FloatingPointLiteral:
-    DecimalFloatingPointLiteral
-    HexadecimalFloatingPointLiteral
+    DecimalFP
+    HexFP
 
-DecimalFloatingPointLiteral:
+DecimalFP:
     Digits  '.'  Digits(?)  ExponentPart(?)  FloatTypeSuffix(?)
-    '.'  Digits  ExponentPart(?)  FloatTypeSuffix(?)
-    Digits  ExponentPart  FloatTypeSuffix(?)
-    Digits  ExponentPart(?)  FloatTypeSuffix
+            '.'  Digits     ExponentPart(?)  FloatTypeSuffix(?)
+    Digits                  ExponentPart     FloatTypeSuffix(?)
+    Digits                  ExponentPart(?)  FloatTypeSuffix
 
 ExponentPart:
-    ExponentIndicator  SignedInteger
-
-ExponentIndicator:
-    'e'  |  'E'
+    ( 'e'  |  'E' )  SignedInteger
 
 SignedInteger:
     Sign(?)  Digits
@@ -213,7 +166,7 @@ Sign:
 FloatTypeSuffix:
     'f'  |  'F'  |  'd'  |  'D'
 
-HexadecimalFloatingPointLiteral:
+HexFP:
     HexSignificand  BinaryExponent  FloatTypeSuffix(?)
 
 HexSignificand:
@@ -222,15 +175,11 @@ HexSignificand:
     '0'  ( 'x'  | 'X' )  HexDigits(?)  '.'  HexDigits
 
 BinaryExponent:
-    BinaryExponentIndicator  SignedInteger
+    ( 'p'  |  'P' )  SignedInteger
 
-BinaryExponentIndicator:
-    'p'  |  'P'
-    
     
 BooleanLiteral:
     'true'  |  'false'
-    
     
 CharacterLiteral:
     '\''  SingleCharacter  '\''
@@ -238,20 +187,14 @@ CharacterLiteral:
 
 SingleCharacter:
     InputCharacter but not '\'' or '\\'
-    
-    
+        
 StringLiteral:
-    '"'  StringCharacters(?)  '"'
-
-StringCharacters:
-    StringCharacter
-    StringCharacters  StringCharacter
+    '"'  StringCharacter(*)  '"'
 
 StringCharacter:
     InputCharacter but not '"' or '\\'
     EscapeSequence
-    
-    
+
 EscapeSequence:
     '\\b'    /* \u0008: backspace BS */
     '\\t'    /* \u0009: horizontal tab HT */
@@ -265,17 +208,12 @@ EscapeSequence:
 
 OctalEscape:
     '\\'  OctalDigit
-    '\\'  OctalDigit  OctalDigit
-    '\\'  ZeroToThree  OctalDigit  OctalDigit
+    '\\'  OctalDigit(2)
+    '\\'  [0-3]  OctalDigit(2)
 
-ZeroToThree:
-    [0-3]
-    
-    
 NullLiteral:
     'null'
-    
-    
+
 Separator:
     '('  |  ')'  |  '{'  |  '}'  |  '['  |
     ']'  |  ';'  |  ','  |  '.'
