@@ -3,16 +3,13 @@ UnicodeInputCharacter:
     RawInputCharacter
 
 UnicodeEscape:
-    '\'  UnicodeMarker  HexDigit(4)
+    '\\'  UnicodeMarker  HexDigit(4)
 
 UnicodeMarker:
     'u'(+)
 
 RawInputCharacter:
     any Unicode character
-
-HexDigit: one of
-    0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
 
 
 LineTerminator:
@@ -25,11 +22,7 @@ InputCharacter:
 
 
 Input:
-    InputElements(?) Sub(?)
-
-InputElements:
-    InputElement
-    InputElements InputElement
+    InputElement(*)  Sub(?)
 
 InputElement:
     WhiteSpace
@@ -59,31 +52,31 @@ Comment:
     EndOfLineComment
 
 TraditionalComment:
-    / * CommentTail
+    '/*'  CommentTail
 
 EndOfLineComment:
-    / / CharactersInLine(?)
+    '//'  CharactersInLine(?)
 
 CommentTail:
-    * CommentTailStar
-    NotStar CommentTail
+    '*'  CommentTailStar
+    NotStar  CommentTail
 
 CommentTailStar:
-    /
-    * CommentTailStar
-    NotStarNotSlash CommentTail
+    '/'
+    '*'  CommentTailStar
+    NotStarNotSlash  CommentTail
 
 NotStar:
-    InputCharacter but not *
+    InputCharacter but not '*'
     LineTerminator
 
 NotStarNotSlash:
-    InputCharacter but not * or /
+    InputCharacter but not '*' or '/'
     LineTerminator
 
 CharactersInLine:
     InputCharacter
-    CharactersInLine InputCharacter
+    CharactersInLine  InputCharacter
 
 
 Identifier:
@@ -91,7 +84,7 @@ Identifier:
 
 IdentifierChars:
     JavaLetter
-    IdentifierChars JavaLetterOrDigit
+    IdentifierChars  JavaLetterOrDigit
 
 JavaLetter:
     any Unicode character that is a Java letter (see below)
@@ -100,17 +93,17 @@ JavaLetterOrDigit:
     any Unicode character that is a Java letter-or-digit (see below)
 
 
-Keyword: one of
-    abstract   continue   for          new         switch
-    assert     default    if           package     synchronized
-    boolean    do         goto         private     this
-    break      double     implements   protected   throw
-    byte       else       import       public      throws
-    case       enum       instanceof   return      transient
-    catch      extends    int          short       try
-    char       final      interface    static      void
-    class      finally    long         strictfp    volatile
-    const      float      native       super       while
+Keyword:
+    'abstract'  |  'continue'  |  'for'         |  'new'        |  'switch'        |
+    'assert'    |  'default'   |  'if'          |  'package'    |  'synchronized'  |
+    'boolean'   |  'do'        |  'goto'        |  'private'    |  'this'          |
+    'break'     |  'double'    |  'implements'  |  'protected'  |  'throw'         |
+    'byte'      |  'else'      |  'import'      |  'public'     |  'throws'        |
+    'case'      |  'enum'      |  'instanceof'  |  'return'     |  'transient'     |
+    'catch'     |  'extends'   |  'int'         |  'short'      |  'try'           |
+    'char'      |  'final'     |  'interface'   |  'static'     |  'void'          |
+    'class'     |  'finally'   |  'long'        |  'strictfp'   |  'volatile'      |
+    'const'     |  'float'     |  'native'      |  'super'      |  'while' 
 
 
 Literal:
@@ -129,19 +122,19 @@ IntegerLiteral:
     BinaryIntegerLiteral 
 
 DecimalIntegerLiteral:
-    DecimalNumeral IntegerTypeSuffix(?)
+    DecimalNumeral  IntegerTypeSuffix(?)
 
 HexIntegerLiteral:
-    HexNumeral IntegerTypeSuffix(?)
+    HexNumeral  IntegerTypeSuffix(?)
 
 OctalIntegerLiteral:    
-    OctalNumeral IntegerTypeSuffix(?)
+    OctalNumeral  IntegerTypeSuffix(?)
 
 BinaryIntegerLiteral:
-    BinaryNumeral IntegerTypeSuffix(?)
+    BinaryNumeral  IntegerTypeSuffix(?)
 
-IntegerTypeSuffix: one of
-    l L
+IntegerTypeSuffix:
+    'l'  |  'L'
     
     
 DecimalNumeral:
@@ -169,7 +162,7 @@ HexDigits:
     HexDigit  ( HexDigit  |  '_' )(*)  HexDigit 
 
 HexDigit:
-    [0-9A-F]
+    [0-9a-fA-F]
 
     
 OctalNumeral:
@@ -200,98 +193,97 @@ FloatingPointLiteral:
     HexadecimalFloatingPointLiteral
 
 DecimalFloatingPointLiteral:
-    Digits . Digits(?) ExponentPart(?) FloatTypeSuffix(?)
-    . Digits ExponentPart(?) FloatTypeSuffix(?)
-    Digits ExponentPart FloatTypeSuffix(?)
-    Digits ExponentPart(?) FloatTypeSuffix
+    Digits  '.'  Digits(?)  ExponentPart(?)  FloatTypeSuffix(?)
+    '.'  Digits  ExponentPart(?)  FloatTypeSuffix(?)
+    Digits  ExponentPart  FloatTypeSuffix(?)
+    Digits  ExponentPart(?)  FloatTypeSuffix
 
 ExponentPart:
-    ExponentIndicator SignedInteger
+    ExponentIndicator  SignedInteger
 
-ExponentIndicator: one of
-    e E
+ExponentIndicator:
+    'e'  |  'E'
 
 SignedInteger:
-    Sign(?) Digits
+    Sign(?)  Digits
 
-Sign: one of
-    + -
+Sign:
+    '+'  |  '-'
 
-FloatTypeSuffix: one of
-    f F d D
+FloatTypeSuffix:
+    'f'  |  'F'  |  'd'  |  'D'
 
 HexadecimalFloatingPointLiteral:
-    HexSignificand BinaryExponent FloatTypeSuffix(?)
+    HexSignificand  BinaryExponent  FloatTypeSuffix(?)
 
 HexSignificand:
     HexNumeral
-    HexNumeral .
-    0 x HexDigits(?) . HexDigits
-    0 X HexDigits(?) . HexDigits
+    HexNumeral  '.'
+    '0'  ( 'x'  | 'X' )  HexDigits(?)  '.'  HexDigits
 
 BinaryExponent:
-    BinaryExponentIndicator SignedInteger
+    BinaryExponentIndicator  SignedInteger
 
-BinaryExponentIndicator:one of
-    p P
+BinaryExponentIndicator:
+    'p'  |  'P'
     
     
-BooleanLiteral: one of
-    true false
+BooleanLiteral:
+    'true'  |  'false'
     
     
 CharacterLiteral:
-    ' SingleCharacter '
-    ' EscapeSequence '
+    '\''  SingleCharacter  '\''
+    '\''  EscapeSequence '\''
 
 SingleCharacter:
-    InputCharacter but not ' or \
+    InputCharacter but not '\'' or '\\'
     
     
 StringLiteral:
-    " StringCharacters(?) "
+    '"'  StringCharacters(?)  '"'
 
 StringCharacters:
     StringCharacter
-    StringCharacters StringCharacter
+    StringCharacters  StringCharacter
 
 StringCharacter:
-    InputCharacter but not " or \
+    InputCharacter but not '"' or '\\'
     EscapeSequence
     
     
 EscapeSequence:
-    \ b    /* \u0008: backspace BS */
-    \ t    /* \u0009: horizontal tab HT */
-    \ n    /* \u000a: linefeed LF */
-    \ f    /* \u000c: form feed FF */
-    \ r    /* \u000d: carriage return CR */
-    \ "    /* \u0022: double quote " */
-    \ '    /* \u0027: single quote ' */
-    \ \              /* \u005c: backslash \ */
+    '\\b'    /* \u0008: backspace BS */
+    '\\t'    /* \u0009: horizontal tab HT */
+    '\\n'    /* \u000a: linefeed LF */
+    '\\f'    /* \u000c: form feed FF */
+    '\\r'    /* \u000d: carriage return CR */
+    '\\"'    /* \u0022: double quote " */
+    '\\\''    /* \u0027: single quote ' */
+    '\\\\'              /* \u005c: backslash \ */
     OctalEscape        /* \u0000 to \u00ff: from octal value */
 
 OctalEscape:
-    \ OctalDigit
-    \ OctalDigit OctalDigit
-    \ ZeroToThree OctalDigit OctalDigit
+    '\\'  OctalDigit
+    '\\'  OctalDigit  OctalDigit
+    '\\'  ZeroToThree  OctalDigit  OctalDigit
 
-OctalDigit: one of
-    0 1 2 3 4 5 6 7
-
-ZeroToThree: one of
-    0 1 2 3
+ZeroToThree:
+    [0-3]
     
     
 NullLiteral:
-    null
+    'null'
     
     
-Separator: one of
-    (    )    {    }    [    ]    ;    ,    .
+Separator:
+    '('  |  ')'  |  '{'  |  '}'  |  '['  |
+    ']'  |  ';'  |  ','  |  '.'
     
-Operator: one of
-    =   >   <   !   ~   ?   :
-    ==  <=  >=  !=  &&  ||  ++  --
-    +   -   *   /   &   |   ^   %   <<   >>   >>>
-    +=  -=  *=  /=  &=  |=  ^=  %=  <<=  >>=  >>>=
+Operator:
+    '='    |  '>'    |  '<'   |  '!'   |  '~'    |  '?'   |  ':'    |
+    '=='   |  '<='   |  '>='  |  '!='  |  '&&'   |  '||'  |  '++'   |
+    '--'   |  '+'    |  '-'   |  '*'   |  '/'    |  '&'   |  '|'    |
+    '^'    |  '%'    |  '<<'  |  '>>'  |  '>>>'  |  '+='  |  '-='   |
+    '*='   |  '/='   |  '&='  |  '|='  |  '^='   |  '%='  |  '<<='  |
+    '>>='  |  '>>>='
