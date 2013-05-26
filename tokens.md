@@ -145,72 +145,43 @@ IntegerTypeSuffix: one of
     
     
 DecimalNumeral:
-    0
-    NonZeroDigit Digits(?)
-    NonZeroDigit Underscores Digits 
+    '0'
+    NonZeroDigit  Digits(?)
+    NonZeroDigit  '_'(+)  Digits 
 
 Digits:
     Digit
-    Digit DigitsAndUnderscores(?) Digit 
+    Digit  ( Digit  |  '_' )(*)  Digit 
 
 Digit:
-    0
+    '0'
     NonZeroDigit
 
-NonZeroDigit: one of
-    1 2 3 4 5 6 7 8 9
-
-DigitsAndUnderscores:
-    DigitOrUnderscore
-    DigitsAndUnderscores DigitOrUnderscore 
-
-DigitOrUnderscore:
-    Digit
-    _
-
-Underscores:
-    _
-    Underscores _
+NonZeroDigit:
+    [1-9]
     
     
 HexNumeral:
-    0 x HexDigits
-    0 X HexDigits
+    '0'  ( 'x'  |  'X' ) HexDigits
 
 HexDigits:
     HexDigit
-    HexDigit HexDigitsAndUnderscores(?) HexDigit 
+    HexDigit  ( HexDigit  |  '_' )(*)  HexDigit 
 
-HexDigit: one of
-    0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
+HexDigit:
+    [0-9A-F]
 
-HexDigitsAndUnderscores:
-    HexDigitOrUnderscore
-    HexDigitsAndUnderscores HexDigitOrUnderscore
-
-HexDigitOrUnderscore:
-    HexDigit
-    _
-    
     
 OctalNumeral:
-    0 OctalDigits
-    0 Underscores OctalDigits
+    '0'  OctalDigits
+    '0'  '_'(+)  OctalDigits
 
 OctalDigits:
     OctalDigit
-    OctalDigit OctalDigitsAndUnderscores(?) OctalDigit 
+    OctalDigit  ( OctalDigit  |  '_' )(*)  OctalDigit 
 
-OctalDigit: one of
-    0 1 2 3 4 5 6 7
-
-OctalDigitsAndUnderscores:
-    OctalDigitOrUnderscore
-    OctalDigitsAndUnderscores OctalDigitOrUnderscore
-
-OctalDigitOrUnderscore:
-    OctalDigit
-    _
+OctalDigit:
+    [0-7]
     
     
 BinaryNumeral:
