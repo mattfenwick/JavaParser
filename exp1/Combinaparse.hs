@@ -20,6 +20,9 @@ module Combinaparse (
   , not1
   , end
   
+  , optional
+  , optionalM
+  
   , MonadError(..)
   , commit
   
@@ -84,6 +87,13 @@ not1 p = switch p *> item
 
 end :: (MonadState [t] m, Alternative m, Switch m) => m ()
 end = switch item
+
+
+optional :: Alternative f => a -> f a -> f a
+optional x p = p <|> pure x
+
+optionalM :: Alternative f => f a -> f (Maybe a)
+optionalM p = fmap Just p <|> pure Nothing
 
 
 class Monad m => MonadError e m | m -> e where

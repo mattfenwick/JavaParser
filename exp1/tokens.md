@@ -28,8 +28,7 @@ InputElement:
     Token
 
 Token:
-    Identifier
-    Keyword
+    IdentifierOrKeywordOrNullOrBoolean
     Literal
     Separator
     Operator
@@ -44,8 +43,8 @@ Comment:
     '/*'  (not1 '*/')  '*/'  -- <-- where 'not1' is defined by InputCharacter
     '//'  InputCharacter(*)
 
-Identifier:
-    [a-zA-Z_$]  [a-zA-Z_$0-9](*)     -- <-- but not a Keyword or BooleanLiteral or NullLiteral
+IdentifierOrKeywordOrNullOrBoolean:
+    [a-zA-Z_$]  [a-zA-Z_$0-9](*)     -- classified as Keyword, null, or boolean if it matches one of them
 
 Keyword:
     'abstract'  |  'continue'  |  'for'         |  'new'        |  'switch'        |
@@ -59,35 +58,24 @@ Keyword:
     'class'     |  'finally'   |  'long'        |  'strictfp'   |  'volatile'      |
     'const'     |  'float'     |  'native'      |  'super'      |  'while' 
 
+BooleanLiteral:
+    'true'  |  'false'
+
+NullLiteral:
+    'null'
+    
 Literal:
     IntegerLiteral
-    BooleanLiteral
     CharacterLiteral
     StringLiteral
-    NullLiteral
 
 IntegerLiteral:
     DecimalNumeral  ( 'l'  |  'L' )(?)
 
 DecimalNumeral:
-    '0'
-    NonZeroDigit  Digits(?)
-    NonZeroDigit  '_'(+)  Digits 
+    [1-9]  [0-9_](*)  [0-9]
+    [0-9]
 
-Digits:
-    Digit
-    Digit  ( Digit  |  '_' )(*)  Digit 
-
-Digit:
-    '0'
-    NonZeroDigit
-
-NonZeroDigit:
-    [1-9]
-
-BooleanLiteral:
-    'true'  |  'false'
-    
 CharacterLiteral:
     '\''  SingleCharacter  '\''
     '\''  EscapeSequence '\''
@@ -104,9 +92,6 @@ StringCharacter:
 
 EscapeSequence:
     '\\'  ( 'b'  |  't'  |  'n'  |  'f'  |  'r'  |  '"'  |  '\''  |  '\\' )
-
-NullLiteral:
-    'null'
 
 Separator:
     '('  |  ')'  |  '{'  |  '}'  |  '['  |

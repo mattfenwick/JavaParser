@@ -78,7 +78,7 @@ data Literal
   | LBool Bool
   | LChar Char
   | LString String
-  | LInteger Integer
+  | LInteger String String
   deriving (Show, Eq)  
 
 

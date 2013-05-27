@@ -8,9 +8,10 @@ import Prelude hiding (lookup)
 import Data.Map       (Map, fromList, lookup)
 
 
--- problem:  what about capital A-F?  they should work too
 digits :: Map Char Integer
-digits = fromList $ zip (['0' .. '9'] ++ ['a' .. 'f']) [0 .. 15]
+digits = fromList $ zip keys vals
+  where keys = ['0' .. '9'] ++ ['a' .. 'f'] ++ ['A' .. 'F']
+        vals = [0 .. 15]                    ++ [10 .. 15]
 
 
 sumIt :: Integer -> [Integer] -> Integer
