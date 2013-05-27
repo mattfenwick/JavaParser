@@ -134,60 +134,48 @@ separator = foldr (<|>) empty $ map p seps
 
 
 ops :: [(String, Operator)]
-ops = [("=",    Equals),
+ops = [("==",   DoubleEquals),
+       ("=",    Equals),
+       (">>>=", TripleGreaterThanEquals),
+       (">>>",  TripleGreaterThan),
+       (">>=",  DoubleGreaterThanEquals),
+       (">>",   DoubleGreaterThan),
+       (">=",   GreaterThanOrEquals),
        (">",    GreaterThan),
+       ("<<=",  DoubleLessThanEquals),
+       ("<=",   LessThanOrEquals),
+       ("<<",   DoubleLessThan),
        ("<",    LessThan),
+       ("!=",   NotEquals),
        ("!",    ExclamationPoint),
+       ("&&",   AndAnd),
+       ("&=",   AndEquals),
+       ("&",    And),
+       ("||",   OrOr),
+       ("|=",   OrEquals),
+       ("|",    Or),
+       ("+=",   PlusEquals),
+       ("++",   PlusPlus),
+       ("+",    Plus),
+       ("-=",   MinusEquals),
+       ("--",   MinusMinus),
+       ("-",    Minus),
+       ("*=",   TimesEquals),
+       ("*",    Times),
+       ("/=",   DivideByEquals),
+       ("/",    DivideBy),
+       ("^=",   ToTheEquals),
+       ("^",    ToThe),
+       ("%=",   PercentageEquals),
+       ("%",    Percentage),
        ("~",    Tilda),
        ("?",    QuestionMark),
-       (":",    Colon),
-       ("==",   DoubleEquals),
-       ("<=",   LessThanOrEquals),
-       (">=",   GreaterThanOrEquals),
-       ("!=",   NotEquals),
-       ("&&",   AndAnd),
-       ("||",   OrOr),
-       ("++",   PlusPlus),
-       ("--",   MinusMinus),
-       ("+",    Plus),
-       ("-",    Minus),
-       ("*",    Times),
-       ("/",    DivideBy),
-       ("&",    And),
-       ("|",    Or),
-       ("^",    ToThe),
-       ("%",    Percentage),
-       ("<<",   DoubleLessThan),
-       (">>",   DoubleGreaterThan),
-       (">>>",  TripleGreaterThan),
-       ("+=",   PlusEquals),
-       ("-=",   MinusEquals),
-       ("*=",   TimesEquals),
-       ("/=",   DivideByEquals),
-       ("&=",   AndEquals),
-       ("|=",   OrEquals),
-       ("^=",   ToTheEquals),
-       ("%=",   PercentageEquals),
-       ("<<=",  DoubleLessThanEquals),
-       (">>=",  DoubleGreaterThanEquals),
-       (">>>=", TripleGreaterThanEquals)]
+       (":",    Colon)]
 
 -- operator :: Parser Char Operator
 operator = foldr (<|>) empty $ map p ops
   where p (s, op) = fmap (const op) $ jStr s
-{-
-Separator:
-    '('  |  ')'  |  '{'  |  '}'  |  '['  |
-    ']'  |  ';'  |  ','  |  '.'
-    
-Operator:
-    '='    |  '>'    |  '<'   |  '!'   |  '~'    |  '?'   |  ':'    |
-    '=='   |  '<='   |  '>='  |  '!='  |  '&&'   |  '||'  |  '++'   |
-    '--'   |  '+'    |  '-'   |  '*'   |  '/'    |  '&'   |  '|'    |
-    '^'    |  '%'    |  '<<'  |  '>>'  |  '>>>'  |  '+='  |  '-='   |
-    '*='   |  '/='   |  '&='  |  '|='  |  '^='   |  '%='  |  '<<='  |
-    '>>='  |  '>>>='
--}
+
 {-
 Input:
     InputElement(*)  Sub(?)
