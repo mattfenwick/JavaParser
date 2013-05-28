@@ -1,0 +1,24 @@
+Although array types seem to count as reference types, you cannot extend them.
+However, array types can be in bounds:   
+
+    List<? extends int []> arr;  whatever that means
+
+Since ReferenceType is kind of misused, why not just ditch it and use types everywhere?
+
+ditched obsolete rule allowing braces after a method declarator
+
+depending on whether a variable is local, in a class, or in an interface, different modifiers are allowed
+
+method calls apparently:
+ - don't allow wild card type parameters, whereas
+ - parameterized types do
+ - thus, type parameters in methods are different from type parameters in types
+
+ 
+type parameters and arguments:
+ - type:   List<?>, List<A>, List<A extends B>, List<A super B>   (type arguments)
+ - type declaration:   class Q<A>, class Q<A extends B>, class Q<A extends B & C>   (type parameters) 
+ - method call:   same as type, except no wildcards:  a<B>(), a(), a<B,C>()   (type arguments)
+ - method declaration:  same as type declaration??   (type parameters)
+
+absolutely do not understand the noshortif-type grammar rules, at all.  wtf do they do?

@@ -13,7 +13,7 @@ data PrimitiveType
     deriving (Show, Eq)
 
 data ReferenceType
-    = RPrim PrimitiveType Int
+    = RPrim Type Int
     | RRef [(String, [TypeArgument])]  -- outer list must have >= 1 elem, inner list can have any number
     deriving (Show, Eq)
     
@@ -30,45 +30,57 @@ data Type
     deriving (Show, Eq)
 
 
+-- packages, imports, compilation units
 -- under construction !!!
 
-{-
+data PackageDeclaration 
+    = PD {
+        getAnnotations :: [Annotation],
+        getPackageName :: [String]
+    } deriving(Show, Eq)
 
 data CompilationUnit
     = CU {
-        annotations :: [Annotation],
-        packageName :: Maybe QIdent,
-        imports     :: [Import],
-        types       :: [([Modifier], Type)]
+        getPackageDeclaration :: Maybe PackageDeclaration,
+        getImports            :: [Import],
+        getTypeDecls          :: [TypeDeclaration]
     } deriving (Show, Eq)
 
 data Import
     = Import {
-        isStatic :: Bool,
-        name :: QIdent,
+        isStatic   :: Bool,
+        getName    :: [String],
         isWildCard :: Bool
     } deriving (Show, Eq)
 
 data TypeDeclaration
-    = TClass Class
-    | TEnum Enum
-    | TInterface Interface 
-    | TAnnotation Annotation
+    = TDClass Class
   deriving (Show, Eq)
+{-    | TDEnum Enum
+    | TDInterface Interface 
+    | TDAnnotation Annotation
+-}
 
 data Class
     = Class {
-        name    :: String, 
-        typeParams :: [TypeParameter],
-        extends :: Type,
+        name       :: String, 
+--        typeParams :: [TypeParameter],
+        extends    :: Type,
         implements :: [Type],
-        fields  :: [Field],
-        methods :: [Method],
-        constructors :: [Method],
-        blocks  :: [Block],
-        types   :: [TypeDeclaration]
+--        fields     :: [Field],
+--        methods    :: [Method],
+--        constructors :: [Method],
+--        blocks     :: [Block],
+        typeDecls  :: [TypeDeclaration]
     } deriving (Show, Eq)
     
+data Annotation 
+    = OOPS  -- !!!
+    deriving (Show, Eq)
+
+    
+{-
+
 data Enum
     = Enum {
         name       :: String,
