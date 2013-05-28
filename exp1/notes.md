@@ -30,3 +30,12 @@ Tokenization:
  
  - the order that operator matches are tried in matters ... want to parse `==` as double-equals,
    not as two separate equals tokens
+
+   
+Parsing/AST:
+
+ - it seems like there's a sub-unit missing in the types definition.  Shouldn't 
+   `Identifier  TypeParameters(?)` be a reusable subunit?
+
+ - 
+

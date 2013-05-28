@@ -1,15 +1,19 @@
 
     Method:
-        Modifier(*)  ( Type  |  'void' )  Identifier  TypeParameters(?)  FormalParameters  '{'  Statement(+)  '}'
+        Modifier(*)  ( Type  |  'void' )  Identifier  TypeParameters(?)  FormalParameters  '{'  Statement  '}'
         
     Modifier:
-        
+        'strictfp'     |    'public'      |    'protected'     |
+        'private'      |    'static'      |    'abstract'      |
+        'final'        |    'native'      |    'synchronized'  |
+        'transient'    |    'volatile'
     
     Type:
         BasicType  ( '['  ']' )(*)
     
     BasicType:
-        PrimitiveType
+        'byte'   |   'short'   |   'char'     |   'int'      |
+        'long'   |   'float'   |   'double'   |   'boolean'  |
         sepBy1(Identifier  TypeParameters(?), '.')
     
     TypeParameters:
@@ -19,19 +23,5 @@
         '('  sepBy0(Modifier(*)  Type  Identifier, ',')  ')'
     
     Statement:
-        For
-        While
-        If
-        Return
-        Block
+        'return'  Identifier(?)  ';'
     
-    For:
-    
-    
-    While:
-        'while'  '('  Expression  ')'  Statement
-    
-    If:
-    
-    
-    Return:
