@@ -23,6 +23,9 @@ module Combinaparse (
   , optional
   , optionalM
   
+  , sepBy0
+  , sepBy1
+  
   , MonadError(..)
   , commit
   
@@ -94,6 +97,13 @@ optional x p = p <|> pure x
 
 optionalM :: Alternative f => f a -> f (Maybe a)
 optionalM p = fmap Just p <|> pure Nothing
+
+
+sepBy0 :: Alternative f => f a -> f b -> f [a]
+sepBy0 p sep = optional [] (sepBy1 p sep)
+
+sepBy1 :: Alternative f => f a -> f b -> f [a]
+sepBy1 p sep = fmap (:) p <*> many0 (sep *> p)
 
 
 class Monad m => MonadError e m | m -> e where

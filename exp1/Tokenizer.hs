@@ -1,6 +1,8 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 module Tokenizer (
 
+    input
+
 ) where
 
 import Combinaparse
@@ -180,4 +182,4 @@ inputElement :: Parser String Char InputElement
 inputElement = fmap Whitespace (many1 whiteSpace) <|> fmap Comment comment <|> fmap Token token
 
 input :: Parser String Char [InputElement]
-input = many0 inputElement <* sub
+input = many0 inputElement <* optionalM sub

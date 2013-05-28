@@ -1,6 +1,6 @@
 
     Method:
-        Modifier(*)  ( Type  |  'void' )  Identifier  TypeParameters(?)  FormalParameters  '{'  Statement  '}'
+        Modifier(*)  TypeParameters(?)  ( Type  |  'void' )  Identifier  FormalParameters  '{'  Statement  '}'
         
     Modifier:
         'strictfp'     |    'public'      |    'protected'     |
@@ -17,7 +17,7 @@
         sepBy1(Identifier  TypeParameters(?), '.')
     
     TypeParameters:
-        '<'  sepBy1(Type, ',')  '>'
+        '<'  sepBy1(Identifier, ',')  '>'
     
     FormalParameters:
         '('  sepBy0(Modifier(*)  Type  Identifier, ',')  ')'

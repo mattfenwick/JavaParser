@@ -3,17 +3,17 @@ module AST (
     Modifier(..)
   , BasicType(..)
   , Type(..)
-  , ReturnType(..)
   , Identifier
   , FormalParameter(..)
   , Statement(..)
+  , Method(..)
   
 ) where
 
 
 data Modifier
     = Mstrictfp
-    | MPublic
+    | Mpublic
     | Mprotected
     | Mprivate
     | Mstatic
@@ -34,18 +34,13 @@ data BasicType
     | Tfloat
     | Tdouble
     | Tboolean
-    | RefType [(String, [Type])]
+    | RefType [(String, [String])]
   deriving (Show, Eq)
   
 data Type
     = Type BasicType Int
   deriving (Show, Eq)
   
-data ReturnType
-    = RTType Type
-    | RTVoid
-  deriving (Show, Eq)
-
 type Identifier = String
 
 data FormalParameter
@@ -58,4 +53,15 @@ data FormalParameter
 
 data Statement
     = SReturn (Maybe Identifier)
+  deriving (Show, Eq)
+
+data Method
+    = Method {
+        modifiers        :: [Modifier],
+        typeParameters   :: [String],
+        returnType       :: Maybe Type,
+        name             :: String,
+        formalParameters :: [FormalParameter],
+        body             :: Statement
+    }
   deriving (Show, Eq)

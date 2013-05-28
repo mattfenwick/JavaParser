@@ -37,5 +37,6 @@ Parsing/AST:
  - it seems like there's a sub-unit missing in the types definition.  Shouldn't 
    `Identifier  TypeParameters(?)` be a reusable subunit?
 
- - 
+ - oopsie-doopsie, changed grammar to only accept identifiers in type parameters, instead of full
+   types.  This was just done for simplicity.  I plan to change it back later.
 
