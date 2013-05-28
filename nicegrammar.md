@@ -32,6 +32,7 @@ TypeName:
 ExpressionName:
 MethodName:
 PackageOrTypeName:
+ClassName:
 AmbiguousName:
     sepBy1(Identifier, '.')
 
@@ -54,10 +55,10 @@ TypeDeclaration:
 
 
 Class:
-    ClassModifiers(*)  'class'  Identifier  TypeParameters(?)  Super(?)  Interfaces(?)  ClassBody
+    ClassModifier(*)  'class'  Identifier  TypeParameters(?)  Super(?)  Interfaces(?)  ClassBody
 
 ClassModifier:
-    Annotation  |  'public'  |  'protected'  |  'private
+    Annotation  |  'public'  |  'protected'  |  'private  |
     'abstract'  |  'static'  |  'final'      |  'strictfp
 
 TypeParameters:
@@ -149,7 +150,7 @@ MethodBody:
     ';'
 
 ConstructorDeclaration:
-    ConstructorModifier(*)  TypeParameters(?)  SimpleTypeName  FormalParameterList  Throws(?)  ConstructorBody
+    ConstructorModifier(*)  TypeParameters(?)  Identifier  FormalParameterList  Throws(?)  ConstructorBody
 
 ConstructorModifier:
     Annotation  |  'public'  |  'protected'  |  'private'
@@ -166,7 +167,7 @@ NonWildTypeArguments:
     '<'  sepBy1(ReferenceType, ',')  '>'
 
 Enum:
-    ClassModifiers(?)  'enum'  Identifier  Interfaces(?)  EnumBody
+    ClassModifier(*)  'enum'  Identifier  Interfaces(?)  EnumBody
 
 EnumBody:
     '{'  sepBy0(EnumConstant, ',')  ','(?)  ( ';'  ClassBodyDeclaration(*) )(?)  '}'
