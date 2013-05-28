@@ -4,19 +4,12 @@ module Tokenizer (
 ) where
 
 import Combinaparse
-import Tokens                    (Keyword(..), Literal(..), Operator(..), Separator(..), Token(..), stringToKeyword)
+import Tokens                    
 import Data.Traversable          (Traversable(..))
 import Control.Monad             (replicateM)
 import Hex                       (hexStringToInteger)
 import Data.Char                 (chr)
 
-
--- more combinators
-
-str = traverse literal
-
-
---
 
 
 rawHexDigit :: Parser e Char Char
@@ -37,6 +30,7 @@ jLiteral c = jSatisfy (== c)
 jStr       = traverse jLiteral
 
 -- which means everything after this should use the `j...` versions
+
 
 lineTerminator = jLiteral '\n' <|> jLiteral '\r' <|> (pure '\n' <* jStr "\r\n") -- bad solution to type problem !!!
 
@@ -59,7 +53,7 @@ classify str = case stringToKeyword str of (Just k) -> Keyword k
                                            Nothing  -> Identifier str
 
 
-identifierOrKeyword = fmap (\f rs -> classify (f:rs)) first <*> many0 rest
+identifierOrKeywordOrBooleanOrNull = fmap (\f rs -> classify (f:rs)) first <*> many0 rest
   where first = jSatisfy (flip elem (['a' .. 'z'] ++ ['A' .. 'Z'] ++ "_$"))
         rest = first <|> jSatisfy (flip elem ['0' .. '9'])
 
@@ -126,8 +120,7 @@ seps = [('(', OpenParen),
         (';', Semicolon),
         ('.', Period)]
 
-
--- separator :: Parser Char Separator
+separator :: Parser String Char Separator
 separator = foldr (<|>) empty $ map p seps
   where 
     p (c, sep) = fmap (const sep) $ jLiteral c
@@ -172,22 +165,19 @@ ops = [("==",   DoubleEquals),
        ("?",    QuestionMark),
        (":",    Colon)]
 
--- operator :: Parser Char Operator
+operator :: Parser String Char Operator
 operator = foldr (<|>) empty $ map p ops
   where p (s, op) = fmap (const op) $ jStr s
 
-{-
-Input:
-    InputElement(*)  Sub(?)
 
-InputElement:
-    WhiteSpace
-    Comment
-    Token
+token :: Parser String Char Token
+token = identifierOrKeywordOrBooleanOrNull  <|> 
+        javaLiteral                         <|> 
+        fmap Separator separator            <|> 
+        fmap Operator operator
 
-Token:
-    Identifier
-    Literal
-    Separator
-    Operator
--}
+inputElement :: Parser String Char InputElement
+inputElement = fmap Whitespace (many1 whiteSpace) <|> fmap Comment comment <|> fmap Token token
+
+input :: Parser String Char [InputElement]
+input = many0 inputElement <* sub

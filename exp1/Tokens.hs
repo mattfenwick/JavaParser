@@ -5,6 +5,7 @@ module Tokens (
   , Separator(..)
   , Operator(..)
   , Token(..)
+  , InputElement(..)
   
   , stringToKeyword
 
@@ -144,4 +145,11 @@ data Token
   | Operator Operator
   | AtSign
   | Ellipsis
+  deriving (Show, Eq)
+
+
+data InputElement
+  = Whitespace String
+  | Comment String
+  | Token Token
   deriving (Show, Eq)
