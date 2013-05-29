@@ -40,3 +40,12 @@ Parsing/AST:
  - oopsie-doopsie, changed grammar to only accept identifiers in type parameters, instead of full
    types.  This was just done for simplicity.  I plan to change it back later.
 
+ - How is `A<B<C>>` tokenized, and how is it parsed?  The problem is that it should be tokenized 
+   as `A, <, B, <, C, >>` according to the longest match rule, but then it would not be parsed as
+   a correct type arguments thing.  But Eclipse parses it just fine.  The answer seems to be that
+   it *is* tokenized the same way, but then the tokens can be reinterpreted during parsing, if
+   necessary.  So tokens beginning with `>` will have the first `>` stripped off, then the shortened
+   token is pushed back onto the token input stream.
+   Question:  can this situation arise with type parameters, or is it only with type arguments?
+   I don't think so, because type parameters can't be nested:  in `<A extends B<C>>`, the type
+   arguments see the `>>` and deal with it before the type parameters do.
