@@ -14,7 +14,10 @@
     BasicType:
         'byte'   |   'short'   |   'char'     |   'int'      |
         'long'   |   'float'   |   'double'   |   'boolean'  |
-        sepBy1(Identifier  TypeParameters(?), '.')
+        sepBy1(Identifier  TypeArguments(?), '.')
+    
+    TypeArguments:
+        '<'  sepBy1(Type, ',')  '>'
     
     TypeParameters:
         '<'  sepBy1(Identifier, ',')  '>'

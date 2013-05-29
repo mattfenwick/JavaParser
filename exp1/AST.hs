@@ -34,7 +34,7 @@ data BasicType
     | Tfloat
     | Tdouble
     | Tboolean
-    | RefType [(String, [String])]
+    | RefType [(String, [Type])]
   deriving (Show, Eq)
   
 data Type
