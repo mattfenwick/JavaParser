@@ -46,6 +46,21 @@ Tokenization:
  - hex floating point exponents are introduced by p or P, instead of e or E as in decimal floating
    point literals.  Presumably this is because e and E are valid hex digits.
 
+ - Notes in Java spec pertaining to allowable identifier characters:
+
+> A "Java letter" is a character for which the method Character.isJavaIdentifierStart(int) returns true.
+> A "Java letter-or-digit" is a character for which the method Character.isJavaIdentifierPart(int) returns true.
+
+> Letters and digits may be drawn from the entire Unicode character set, 
+> which supports most writing scripts in use in the world today, 
+> including the large sets for Chinese, Japanese, and Korean. 
+> This allows programmers to use identifiers in their programs that are written in their native languages.
+
+   I'm just going to go with leters, numbers, $, and _.
+   
+ - apparently, `SUB` (ASCII 26) is a real character that needs to be matched if it's at the end of the
+   character input stream *before* matching end-of-input.
+
    
 Parsing/AST:
 

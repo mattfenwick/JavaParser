@@ -61,12 +61,6 @@ Keyword:
     'class'     |  'finally'   |  'long'        |  'strictfp'   |  'volatile'      |
     'const'     |  'float'     |  'native'      |  'super'      |  'while' 
 
-BooleanLiteral:
-    'true'  |  'false'
-
-NullLiteral:
-    'null'
-    
 Literal:
     IntegerLiteral
     CharacterLiteral
@@ -81,7 +75,7 @@ DecimalNumeral:
 
 CharacterLiteral:
     '\''  SingleCharacter  '\''
-    '\''  EscapeSequence '\''
+    '\''  EscapeSequence  '\''
 
 SingleCharacter:
     InputCharacter but not '\'' or '\\'
