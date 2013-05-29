@@ -34,6 +34,8 @@ Token:
     Literal
     Separator
     Operator
+    '@'
+    '...'
 
 Sub:
     the ASCII SUB character, also known as "control-Z"
@@ -47,16 +49,6 @@ Comment:
 
 IdentifierOrKeywordOrNullOrBoolean:
     [a-zA-Z_$]  [a-zA-Z_$0-9](*)     -- classified as Keyword, null, or boolean if it matches one of them
-
-{- Notes in Java spec:
-A "Java letter" is a character for which the method Character.isJavaIdentifierStart(int) returns true.
-A "Java letter-or-digit" is a character for which the method Character.isJavaIdentifierPart(int) returns true.
-
-Letters and digits may be drawn from the entire Unicode character set, 
-which supports most writing scripts in use in the world today, 
-including the large sets for Chinese, Japanese, and Korean. 
-This allows programmers to use identifiers in their programs that are written in their native languages.
--}
 
 Keyword:
     'abstract'  |  'continue'  |  'for'         |  'new'        |  'switch'        |
@@ -77,7 +69,7 @@ Literal:
     StringLiteral
 
 IntegerLiteral:
-    ( DecimalNumeral  |  HexNumeral  |    OctalNumeral  |  BinaryNumeral )  [lL](?)
+    ( DecimalNumeral  |  HexNumeral  |  OctalNumeral  |  BinaryNumeral )  [lL](?)
 
 DecimalNumeral:
     [1-9]  [0-9_](*)  [0-9]
@@ -131,7 +123,7 @@ BinaryExponent:
 
 CharacterLiteral:
     '\''  SingleCharacter  '\''
-    '\''  EscapeSequence '\''
+    '\''  EscapeSequence  '\''
 
 SingleCharacter:
     InputCharacter but not '\'' or '\\'
@@ -151,9 +143,8 @@ OctalEscape:
     [0-3]  [0-7]{2}
 
 Separator:
-    '('  |  ')'  |  '{'  |  '}'  |  '['  |
-    ']'  |  ';'  |  ','  |  '.'
-    
+    '('  |  ')'  |  '{'  |  '}'  |  '['  |  ']'  |  ';'  |  ','  |  '.'
+
 Operator:
     '='    |  '>'    |  '<'   |  '!'   |  '~'    |  '?'   |  ':'    |
     '=='   |  '<='   |  '>='  |  '!='  |  '&&'   |  '||'  |  '++'   |
