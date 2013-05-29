@@ -1,12 +1,12 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
-module Tokenizer (
+module Exp1.Tokenizer (
 
     input
 
 ) where
 
 import Combinaparse
-import Tokens                    
+import Exp1.Tokens                    
 import Data.Traversable          (Traversable(..))
 import Control.Monad             (replicateM)
 import Hex                       (hexStringToInteger)

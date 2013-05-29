@@ -1,7 +1,7 @@
-import Tokenizer
-import Parser
-import AST
-import Tokens
+import Exp1.Tokenizer
+import Exp1.Parser
+import Exp1.AST
+import Exp1.Tokens
 import Combinaparse
 
 

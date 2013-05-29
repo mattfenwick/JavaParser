@@ -1,5 +1,5 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
-module Parser (
+module Exp1.Parser (
 
     identifier
   , statement
@@ -15,8 +15,8 @@ module Parser (
 ) where
 
 import Combinaparse
-import Tokens
-import AST
+import Exp1.Tokens
+import Exp1.AST
 
 
 op :: Operator -> Parser e Token Token

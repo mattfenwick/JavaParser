@@ -1,4 +1,4 @@
-module AST (
+module Exp1.AST (
 
     Modifier(..)
   , BasicType(..)
