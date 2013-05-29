@@ -9,7 +9,7 @@ import Combinaparse
 import Tokens                    
 import Data.Traversable          (Traversable(..))
 import Control.Monad             (replicateM)
-import Hex                       (hexStringToInteger)
+import Hex                       (hexStringToInteger, octalStringToInteger)
 import Data.Char                 (chr)
 
 
@@ -108,9 +108,22 @@ decimalInteger = pure (LInteger LIDecimal) <*> body <*> integerTypeSuffix
              case safeTail os of (Just '_') -> throwError "bad _ in decimal integer literal";
                                  _          -> return (o : filter (/= '_') os); -- Nothing or Just a digit:  good to go
 
+{-
+  - \8 -> error
+  - \78 -> not error, \7 is the octal escape
+  - \1234 -> not error, \123 is the o.e.
+  - \1a -> not error, \1 is o.e.
+-}
+octalEscape :: Parser String Char Char
+octalEscape = fmap (chr . fromInteger . octalStringToInteger) (o1 <|> o2 <|> o3)
+  where o1 = sequenceA [jSatisfy (flip elem "0123"), odigit, odigit]
+        o2 = sequenceA [odigit, odigit]
+        o3 = fmap (:[]) odigit
+        odigit = jSatisfy (flip elem "01234567")
 
+-- need to commit after seeing the \
 escapeSequence = jLiteral '\\' *> foldr (<|>) empty parsers
-  where parsers = map (\(i, o) -> jLiteral i *> pure o) escapes
+  where parsers = octalEscape : map (\(i, o) -> jLiteral i *> pure o) escapes
         escapes = [('b',  '\b'),
                    ('t',  '\t'),
                    ('n',  '\n'),
