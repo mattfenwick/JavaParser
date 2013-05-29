@@ -2,6 +2,8 @@ module Tokens (
     
     Keyword(..)
   , Literal(..)
+  , LInteger(..)
+  , LFloating(..)
   , Separator(..)
   , Operator(..)
   , Token(..)
