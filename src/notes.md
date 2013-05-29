@@ -34,6 +34,17 @@ Tokenization:
  - the spec uses `HexDigit` in two different places:  UnicodeEscapes (i.e. `\u00af`) and hexadecimal
    numerals (i.e. 0x12a3).  But they're different:  the first accepts only raw hex digits, whereas
    the second accepts raw *and* unicode-escaped hex digits.
+   
+ - hexadecimal floating point numbers with exponents:  the base is in hexadecimal, the exponent is
+   written in decimal but is a binary exponent.  Examples:
+     
+        0x3.23p2; // 12.546875 in decimal, because it's `3.23 in base 16, * 2^2`, not 10^2 or 16^2,
+                  //   and so it's `(3 + 2. / 16 + 3. / 64) * 4`
+                  
+        double d1 = 0x3.23pa2; // invalid because it uses a hex digit in the exponent
+ 
+ - hex floating point exponents are introduced by p or P, instead of e or E as in decimal floating
+   point literals.  Presumably this is because e and E are valid hex digits.
 
    
 Parsing/AST:

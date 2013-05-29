@@ -1,22 +1,25 @@
-UnicodeInputCharacter:
-    UnicodeEscape
-    RawInputCharacter
+RawHexDigit:
+    [0-9a-fA-F]
 
 UnicodeEscape:
-    '\\'  'u'(+)  HexDigit(4)
+    '\\'  'u'(+)  RawHexDigit(4)
 
 RawInputCharacter:
     any Unicode character
 
+UnicodeInputCharacter:
+    UnicodeEscape
+    RawInputCharacter
+
+ 
+-- note:  all following rules operate on unicode-unescaped input,
+--   not on the raw input, according to `UnicodeInputCharacter` above
 
 LineTerminator:
-    the ASCII LF character, also known as "newline"
-    the ASCII CR character, also known as "return"
-    the ASCII CR character followed by the ASCII LF character
+    '\n'  |  '\r'  |  '\r\n'
 
 InputCharacter:
-    UnicodeInputCharacter but not CR or LF
-
+    UnicodeInputCharacter but not LineTerminator
 
 Input:
     InputElement(*)  Sub(?)
@@ -27,8 +30,7 @@ InputElement:
     Token
 
 Token:
-    Identifier
-    Keyword
+    IdentifierOrKeywordOrNullOrBoolean
     Literal
     Separator
     Operator
@@ -36,27 +38,15 @@ Token:
 Sub:
     the ASCII SUB character, also known as "control-Z"
 
-
 WhiteSpace:
-    the ASCII SP character, also known as "space"
-    the ASCII HT character, also known as "horizontal tab"
-    the ASCII FF character, also known as "form feed"
-    LineTerminator
-
+    ' '  |  '\t'  |  '\f'  |  LineTerminator
 
 Comment:
     '/*'  (not1 '*/')  '*/'  -- <-- where 'not1' is defined by InputCharacter
     '//'  InputCharacter(*)
 
-
-Identifier:
-    JavaLetter  JavaLetterOrDigit(*)     -- <-- but not a Keyword or BooleanLiteral or NullLiteral
-
-JavaLetter:
-    [a-zA-Z_$]
-
-JavaLetterOrDigit:
-    JavaLetter  |  [0-9]
+IdentifierOrKeywordOrNullOrBoolean:
+    [a-zA-Z_$]  [a-zA-Z_$0-9](*)     -- classified as Keyword, null, or boolean if it matches one of them
 
 {- Notes in Java spec:
 A "Java letter" is a character for which the method Character.isJavaIdentifierStart(int) returns true.
@@ -80,38 +70,21 @@ Keyword:
     'class'     |  'finally'   |  'long'        |  'strictfp'   |  'volatile'      |
     'const'     |  'float'     |  'native'      |  'super'      |  'while' 
 
-
 Literal:
     IntegerLiteral
     FloatingPointLiteral
-    BooleanLiteral
     CharacterLiteral
     StringLiteral
-    NullLiteral
-
 
 IntegerLiteral:
-    ( DecimalNumeral  |  HexNumeral  |    OctalNumeral  |  BinaryNumeral )  ( 'l'  |  'L' )(?)
-    
+    ( DecimalNumeral  |  HexNumeral  |    OctalNumeral  |  BinaryNumeral )  [lL](?)
+
 DecimalNumeral:
-    '0'
-    NonZeroDigit  Digits(?)
-    NonZeroDigit  '_'(+)  Digits 
+    [1-9]  [0-9_](*)  [0-9]
+    [0-9]
 
-Digits:
-    Digit
-    Digit  ( Digit  |  '_' )(*)  Digit 
-
-Digit:
-    '0'
-    NonZeroDigit
-
-NonZeroDigit:
-    [1-9]
-    
-    
 HexNumeral:
-    '0'  ( 'x'  |  'X' ) HexDigits
+    '0'  [xX]  HexDigits
 
 HexDigits:
     HexDigit
@@ -120,33 +93,18 @@ HexDigits:
 HexDigit:
     [0-9a-fA-F]
 
-    
 OctalNumeral:
-    '0'  OctalDigits
-    '0'  '_'(+)  OctalDigits
+    '0'  [0-7_](*)  [0-7]
 
-OctalDigits:
-    OctalDigit
-    OctalDigit  ( OctalDigit  |  '_' )(*)  OctalDigit 
-
-OctalDigit:
-    [0-7]
-    
-    
 BinaryNumeral:
-    '0'  ( 'b'  |  'B')  BinaryDigits 
+    '0'  [bB]  [01]  ( [01_](*)  [01] )(?)
 
-BinaryDigits:
-    BinaryDigit 
-    BinaryDigit  ( BinaryDigit  |  '_' )(*)  BinaryDigit
-
-BinaryDigit:
-    '0'  |  '1'
-    
-    
 FloatingPointLiteral:
     DecimalFP
     HexFP
+
+Digits:
+    [0-9]  ( [0-9_](*)  [0-9] )(?)
 
 DecimalFP:
     Digits  '.'  Digits(?)  ExponentPart(?)  FloatTypeSuffix(?)
@@ -155,16 +113,10 @@ DecimalFP:
     Digits                  ExponentPart(?)  FloatTypeSuffix
 
 ExponentPart:
-    ( 'e'  |  'E' )  SignedInteger
-
-SignedInteger:
-    Sign(?)  Digits
-
-Sign:
-    '+'  |  '-'
+    [eE]  [+-](?)  Digits
 
 FloatTypeSuffix:
-    'f'  |  'F'  |  'd'  |  'D'
+    [fFdD]
 
 HexFP:
     HexSignificand  BinaryExponent  FloatTypeSuffix(?)
@@ -172,15 +124,11 @@ HexFP:
 HexSignificand:
     HexNumeral
     HexNumeral  '.'
-    '0'  ( 'x'  | 'X' )  HexDigits(?)  '.'  HexDigits
+    '0'  [xX]  HexDigits(?)  '.'  HexDigits
 
 BinaryExponent:
-    ( 'p'  |  'P' )  SignedInteger
+    [pP]  [+-](?)  Digits
 
-    
-BooleanLiteral:
-    'true'  |  'false'
-    
 CharacterLiteral:
     '\''  SingleCharacter  '\''
     '\''  EscapeSequence '\''
@@ -196,23 +144,11 @@ StringCharacter:
     EscapeSequence
 
 EscapeSequence:
-    '\\b'    /* \u0008: backspace BS */
-    '\\t'    /* \u0009: horizontal tab HT */
-    '\\n'    /* \u000a: linefeed LF */
-    '\\f'    /* \u000c: form feed FF */
-    '\\r'    /* \u000d: carriage return CR */
-    '\\"'    /* \u0022: double quote " */
-    '\\\''    /* \u0027: single quote ' */
-    '\\\\'              /* \u005c: backslash \ */
-    OctalEscape        /* \u0000 to \u00ff: from octal value */
+    '\\'  ( 'b'  |  't'  |  'n'  |  'f'  |  'r'  |  '"'  |  '\''  |  '\\'  |  OctalEscape )
 
 OctalEscape:
-    '\\'  OctalDigit
-    '\\'  OctalDigit(2)
-    '\\'  [0-3]  OctalDigit(2)
-
-NullLiteral:
-    'null'
+    [0-7]{1,2}
+    [0-3]  [0-7]{2}
 
 Separator:
     '('  |  ')'  |  '{'  |  '}'  |  '['  |
