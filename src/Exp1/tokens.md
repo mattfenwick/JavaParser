@@ -1,16 +1,19 @@
-UnicodeInputCharacter:
-    UnicodeEscape
-    RawInputCharacter
+RawHexDigit:
+    [0-9a-fA-F]
 
 UnicodeEscape:
-    '\\'  'u'(+)  HexDigit(4)
-
-HexDigit:
-    [0-9a-fA-F]
+    '\\'  'u'(+)  RawHexDigit(4)
 
 RawInputCharacter:
     any Unicode character
 
+UnicodeInputCharacter:
+    UnicodeEscape
+    RawInputCharacter
+
+ 
+-- note:  all following rules operate on unicode-unescaped input,
+--   not on the raw input, according to `UnicodeInputCharacter` above
 
 LineTerminator:
     '\n'  |  '\r'  |  '\r\n'

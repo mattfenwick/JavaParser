@@ -30,6 +30,10 @@ Tokenization:
  
  - the order that operator matches are tried in matters ... want to parse `==` as double-equals,
    not as two separate equals tokens
+   
+ - the spec uses `HexDigit` in two different places:  UnicodeEscapes (i.e. `\u00af`) and hexadecimal
+   numerals (i.e. 0x12a3).  But they're different:  the first accepts only raw hex digits, whereas
+   the second accepts raw *and* unicode-escaped hex digits.
 
    
 Parsing/AST:
