@@ -156,8 +156,7 @@
         Expression
     
     ArrayInitializer:
-        ( '{'  sepBy1(VariableInitializer, ',')  ','(?)  '}' )  |
-        '{'  '}'
+        '{'  sepBy0(VariableInitializer, ',')(?)  ','(?)  '}'
     
     Block: 
         '{'  BlockStatement(*)  '}'
