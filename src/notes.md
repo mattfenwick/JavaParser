@@ -61,6 +61,10 @@ Tokenization:
  - apparently, `SUB` (ASCII 26) is a real character that needs to be matched if it's at the end of the
    character input stream *before* matching end-of-input.
 
+ - note from the Java spec on octal escapes:
+ 
+> Octal escapes are provided for compatibility with C, but can express only Unicode values \u0000 through \u00FF, 
+> so Unicode escapes are usually preferred.
    
 Parsing/AST:
 
