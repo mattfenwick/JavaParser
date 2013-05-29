@@ -199,6 +199,8 @@ operator = foldr (<|>) empty $ map p ops
 token :: Parser String Char Token
 token = identifierOrKeywordOrBooleanOrNull  <|> 
         javaLiteral                         <|> 
+        (jLiteral '@' *> pure AtSign)       <|>
+        (jStr "..." *> pure Ellipsis)       <|>
         fmap Separator separator            <|> 
         fmap Operator operator
 

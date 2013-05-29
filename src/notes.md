@@ -65,6 +65,10 @@ Tokenization:
  
 > Octal escapes are provided for compatibility with C, but can express only Unicode values \u0000 through \u00FF, 
 > so Unicode escapes are usually preferred.
+
+ - I arbitrarily decided that `@` and `...` are their own kinds of tokens.  Also, the tokenizer tries 
+   the ellipsis rule before separators so that `...` as lexed as ellipsis, and not as three periods.
+
    
 Parsing/AST:
 
