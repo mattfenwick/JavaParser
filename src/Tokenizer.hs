@@ -11,7 +11,7 @@ import Data.Traversable          (Traversable(..))
 import Control.Monad             (replicateM)
 import Hex                       (hexStringToInteger, octalStringToInteger)
 import Data.Char                 (chr)
-
+import Prelude        hiding     (exp)
 
 
 rawHexDigit :: Parser e Char Char
@@ -61,6 +61,43 @@ identifierOrKeywordOrBooleanOrNull = fmap (\f rs -> classify (f:rs)) first <*> m
   where first = jSatisfy (flip elem (['a' .. 'z'] ++ ['A' .. 'Z'] ++ "_$"))
         rest = first <|> jSatisfy (flip elem ['0' .. '9'])
 
+floatingPointLiteral :: Parser String Char Literal
+floatingPointLiteral = decimalFP -- <|> hexFP
+
+floatType :: Parser String Char String
+floatType = (jSatisfy (flip elem "fF") *> pure "Float") <|> (jSatisfy (flip elem "dD") *> pure "Double")
+
+digits :: Parser String Char String
+digits = 
+    digit                    >>= \d ->
+    many0 digitOrUnderscore  >>= \ds ->
+    case safeTail ds of (Just '_') -> throwError "bad _ in decimal floating point literal";
+                        _          -> return (d : filter (/= '_') ds)
+
+exp :: Parser String Char String
+exp = pure (\c e ds -> c : e : ds) <*> jSatisfy (flip elem "eE") <*> optional '+' (jSatisfy (flip elem "+-")) <*> digits
+
+binaryExp :: Parser String Char String
+binaryExp = pure  (\c e ds -> c : e : ds) <*> jSatisfy (flip elem "pP") <*> optional '+' (jSatisfy (flip elem "+-")) <*> digits
+
+decimalFP :: Parser String Char Literal
+decimalFP = fmap (\(d1, d, d2, e, t) -> LFloating LFPDecimal (d1 ++ (d : d2) ++ e) t) (a1 <|> a2 <|> a3 <|> a4)
+  where
+    a1 = pure (,,,,) <*> digits  <*> jLiteral '.' <*> optional "" digits <*> optional "" exp <*> optional "Double" floatType
+    a2 = pure (,,,,) <*> pure "" <*> jLiteral '.' <*> digits             <*> optional "" exp <*> optional "Double" floatType
+    a3 = pure (,,,,) <*> digits  <*> pure '.'     <*> pure ""            <*> exp             <*> optional "Double" floatType
+    a4 = pure (,,,,) <*> digits  <*> pure '.'     <*> pure ""            <*> pure ""         <*> floatType
+
+{-
+HexFP:
+    HexSignificand  BinaryExponent  FloatTypeSuffix(?)
+
+HexSignificand:
+    HexNumeral
+    HexNumeral  '.'
+    '0'  [xX]  HexDigits(?)  '.'  HexDigits
+-}
+-- hexFP = undefined
 
 digit = jSatisfy (flip elem ['0' .. '9'])
 digitOrUnderscore = digit <|> jLiteral '_'
@@ -145,7 +182,7 @@ stringLiteral = dq *> commit "invalid string literal or missing double quote" re
         rest = fmap LString (many0 stringCharacter) <* dq
 
 javaLiteral :: Parser String Char Token
-javaLiteral = fmap Literal (integerLiteral <|> characterLiteral <|> stringLiteral)
+javaLiteral = fmap Literal (floatingPointLiteral <|> integerLiteral <|> characterLiteral <|> stringLiteral)
 
 
 seps :: [(Char, Separator)]

@@ -67,16 +67,15 @@ Tokenization:
 > so Unicode escapes are usually preferred.
 
  - I arbitrarily decided that `@` and `...` are their own kinds of tokens.  Also, the tokenizer tries 
-   the ellipsis rule before separators so that `...` as lexed as ellipsis, and not as three periods.
+   the ellipsis rule before separators so that `...` is lexed as ellipsis, not as three periods.
 
+ - the literal `000033` is an octal number, 27 (base 10), whereas the literal `000033f` is *not* an
+   octal number, and is about 33 (base 10).
    
 Parsing/AST:
 
  - it seems like there's a sub-unit missing in the types definition.  Shouldn't 
    `Identifier  TypeParameters(?)` be a reusable subunit?
-
- - oopsie-doopsie, changed grammar to only accept identifiers in type parameters, instead of full
-   types.  This was just done for simplicity.  I plan to change it back later.
 
  - How is `A<B<C>>` tokenized, and how is it parsed?  The problem is that it should be tokenized 
    as `A, <, B, <, C, >>` according to the longest match rule, but then it would not be parsed as
