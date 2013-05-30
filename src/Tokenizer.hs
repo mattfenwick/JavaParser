@@ -31,6 +31,9 @@ jNot1 p    = switch p *> jItem
 jLiteral c = jSatisfy (== c)
 jStr       = traverse jLiteral
 
+oneOf :: [Char] -> Parser String Char Char
+oneOf = jSatisfy . flip elem
+
 -- which means everything after this should use the `j...` versions
 
 
@@ -58,14 +61,14 @@ classify str = case stringToKeyword str of (Just k) -> Keyword k
 
 
 identifierOrKeywordOrBooleanOrNull = fmap (\f rs -> classify (f:rs)) first <*> many0 rest
-  where first = jSatisfy (flip elem (['a' .. 'z'] ++ ['A' .. 'Z'] ++ "_$"))
-        rest = first <|> jSatisfy (flip elem ['0' .. '9'])
+  where first = oneOf (['a' .. 'z'] ++ ['A' .. 'Z'] ++ "_$")
+        rest = first <|> oneOf ['0' .. '9']
 
 floatingPointLiteral :: Parser String Char Literal
 floatingPointLiteral = decimalFP -- <|> hexFP
 
 floatType :: Parser String Char String
-floatType = (jSatisfy (flip elem "fF") *> pure "Float") <|> (jSatisfy (flip elem "dD") *> pure "Double")
+floatType = (oneOf "fF" *> pure "Float") <|> (oneOf "dD" *> pure "Double")
 
 digits :: Parser String Char String
 digits = 
@@ -75,10 +78,10 @@ digits =
                         _          -> return (d : filter (/= '_') ds)
 
 exp :: Parser String Char String
-exp = pure (\c e ds -> c : e : ds) <*> jSatisfy (flip elem "eE") <*> optional '+' (jSatisfy (flip elem "+-")) <*> digits
+exp = pure (\c e ds -> c : e : ds) <*> oneOf "eE" <*> optional '+' (oneOf "+-") <*> digits
 
 binaryExp :: Parser String Char String
-binaryExp = pure  (\c e ds -> c : e : ds) <*> jSatisfy (flip elem "pP") <*> optional '+' (jSatisfy (flip elem "+-")) <*> digits
+binaryExp = pure  (\c e ds -> c : e : ds) <*> oneOf "pP" <*> optional '+' (oneOf "+-") <*> digits
 
 decimalFP :: Parser String Char Literal
 decimalFP = fmap (\(d1, d, d2, e, t) -> LFloating LFPDecimal (d1 ++ (d : d2) ++ e) t) (a1 <|> a2 <|> a3 <|> a4)
@@ -99,7 +102,7 @@ HexSignificand:
 -}
 -- hexFP = undefined
 
-digit = jSatisfy (flip elem ['0' .. '9'])
+digit = oneOf ['0' .. '9']
 digitOrUnderscore = digit <|> jLiteral '_'
 
 safeTail [] = Nothing
@@ -109,38 +112,38 @@ safeTail (x:xs) = safeTail xs
 integerLiteral :: Parser String Char Literal
 integerLiteral = binaryInteger <|> hexInteger <|> octalInteger <|> decimalInteger
 
-integerTypeSuffix = optional "int" ((jLiteral 'l' <|> jLiteral 'L') *> pure "long")
+integerTypeSuffix = optional "int" (oneOf "lL" *> pure "long")
 
 binaryInteger :: Parser String Char Literal
 binaryInteger = pure (LInteger LIBinary) <*> body <*> integerTypeSuffix
-  where body = jLiteral '0'               *> 
-               jSatisfy (flip elem "bB")  *>  -- once we see the b, we need to commit
-               jSatisfy (flip elem "01")          >>= \o -> 
-               many0 (jSatisfy $ flip elem "01_") >>= \os ->
+  where body = jLiteral '0'           *> 
+               oneOf "bB"             *>  -- once we see the b, we need to commit
+               oneOf "01"            >>= \o -> 
+               many0 (oneOf "01_")   >>= \os ->
                case safeTail os of (Just '_') -> throwError "bad _ in binary integer literal";
                                    _          -> return (o : filter (/= '_') os);
 
 hexInteger :: Parser String Char Literal
 hexInteger = pure (LInteger LIHex) <*> body <*> integerTypeSuffix
-  where body = jLiteral '0'               *>
-               jSatisfy (flip elem "xX")  *>  -- once we see the x, we need to commit
+  where body = jLiteral '0'                        *>
+               oneOf "xX"                          *>  -- once we see the x, we need to commit
                hexDigit                           >>= \o ->
                many0 (hexDigit <|> jLiteral '_')  >>= \os -> 
                case safeTail os of (Just '_') -> throwError "bad _ in hex integer literal";
                                    _          -> return (o : filter (/= '_') os);
-        hexDigit = jSatisfy (flip elem (['0' .. '9'] ++ "abcdefABCDEF"))
+        hexDigit = oneOf (['0' .. '9'] ++ "abcdefABCDEF")
 
 octalInteger :: Parser String Char Literal
 octalInteger = pure (LInteger LIOctal) <*> body <*> integerTypeSuffix
-  where body = jLiteral '0'                               *>  -- do not need to commit after seeing 0, 0 is a valid decimal integer
-               many1 (jSatisfy $ flip elem "01234567_")  >>= \os -> 
+  where body = jLiteral '0'                *>  -- do not need to commit after seeing 0, 0 is a valid decimal integer
+               many1 (oneOf "01234567_")  >>= \os -> 
                case safeTail os of (Just '_') -> throwError "bad _ in octal integer literal";
                                    _          -> return (filter (/= '_') os);
 
 decimalInteger :: Parser String Char Literal
 decimalInteger = pure (LInteger LIDecimal) <*> body <*> integerTypeSuffix
   where body = i1 <|> fmap (:[]) digit
-        i1 = jSatisfy (flip elem ['1' .. '9']) >>= \o ->
+        i1 = oneOf ['1' .. '9']                >>= \o ->
              many0 digitOrUnderscore           >>= \os ->
              case safeTail os of (Just '_') -> throwError "bad _ in decimal integer literal";
                                  _          -> return (o : filter (/= '_') os); -- Nothing or Just a digit:  good to go
@@ -153,10 +156,10 @@ decimalInteger = pure (LInteger LIDecimal) <*> body <*> integerTypeSuffix
 -}
 octalEscape :: Parser String Char Char
 octalEscape = fmap (chr . fromInteger . octalStringToInteger) (o1 <|> o2 <|> o3)
-  where o1 = sequenceA [jSatisfy (flip elem "0123"), odigit, odigit]
+  where o1 = sequenceA [oneOf "0123", odigit, odigit]
         o2 = sequenceA [odigit, odigit]
         o3 = fmap (:[]) odigit
-        odigit = jSatisfy (flip elem "01234567")
+        odigit = oneOf "01234567"
 
 -- need to commit after seeing the \
 escapeSequence = jLiteral '\\' *> foldr (<|>) empty parsers
